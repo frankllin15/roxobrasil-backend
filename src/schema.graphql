@@ -1,0 +1,149 @@
+type Role {
+  id: String
+  name: String
+  description: String
+  Users: [User]
+  created_at: String
+}
+
+type Address {
+  id: String!
+  street: String!
+  complement: String
+  number: String!
+  country: String!
+  state: String!
+  code: String!
+  user_id: String!
+  user: User!
+}
+
+type User {
+  id: String!
+  firstName: String!
+  lastName: String
+  email: String!
+  password: String!
+  roles: [Role]
+  address: [Address]
+  created_at: String!
+}
+
+input NewUserInput {
+  firstName: String!
+  lastName: String
+  email: String!
+  password: String!
+  address: NewAddress
+  roles: [String]!
+}
+
+input NewAddress {
+  street: String!
+  complement: String
+  number: String!
+  country: String!
+  state: String!
+  code: String!
+}
+input NewRole {
+  name: String!
+  description: String!
+}
+
+type Error {
+  message: String
+  code: String
+}
+
+type DefaultResult {
+  errors: [Error]
+  success: Boolean
+}
+
+type CreateRoleResult {
+  errors: [Error]
+  success: Boolean
+  role: Role
+}
+
+type RolesResult {
+  errors: [Error]
+  success: Boolean
+  roles: [Role]
+}
+
+type RoleResult {
+  errors: [Error]
+  success: Boolean
+  role: Role
+}
+
+type UserResult {
+  errors: [Error]
+  success: Boolean
+  user: User
+}
+
+type UsersResult {
+  errors: [Error]
+  success: Boolean
+  users: [User]
+}
+
+type DeleteResult {
+  errors: [Error]
+  success: Boolean
+}
+
+type LoginResult {
+  access_token: String
+  user: User
+}
+
+type CreateUserResult {
+  access_token: String
+  user: User
+}
+
+input DeleteRoleInput {
+  id: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input VerifyInput {
+  token: String
+}
+
+input AddRoleInput {
+  id: String!
+}
+
+input AddRoleUserInput {
+  userId: String!
+  roles: [AddRoleInput]
+}
+
+input DeleteUserInput {
+  id: String!
+}
+
+type Query {
+  users: UsersResult
+  user(id: ID!): UserResult
+  roles: RolesResult 
+}
+
+type Mutation {
+  createUser(input: NewUserInput): CreateUserResult
+  deleteUser(input: DeleteUserInput): DeleteResult!
+  createRole(input: NewRole): CreateRoleResult!
+  deleteRole(input: DeleteRoleInput): DeleteResult!
+  login(input: LoginInput): LoginResult
+  verify: User
+  addRolesUser(input: AddRoleUserInput): DefaultResult!
+}
