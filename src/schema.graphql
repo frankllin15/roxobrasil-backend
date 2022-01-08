@@ -10,12 +10,13 @@ type Address {
   id: String!
   street: String!
   complement: String
+  default: Boolean!
   number: String!
   country: String!
   state: String!
   code: String!
   user_id: String!
-  user: User!
+  user: User! 
 }
 
 type User {
@@ -27,6 +28,41 @@ type User {
   roles: [Role]
   address: [Address]
   created_at: String!
+}
+
+type Product {
+  id: String!
+  name: String!
+  descrition: String
+  variants: [Variant]
+  price: Price
+}
+
+type Variant {
+  id: String!
+  name: String!
+  assets: [Assets]
+  product_id: String!
+  product: Product!
+  price: Float!
+  quantity: Int!
+  in_stock: Boolean
+}
+
+type Price {
+   id: Int!
+  max: Float!
+  min: Float!
+  product: Product
+}
+
+type Assets {
+  id: Int!
+  source: String!
+  width: Int
+  height: Int
+  variant_id: String!
+  variant: Variant!
 }
 
 input NewUserInput {
@@ -42,6 +78,7 @@ input NewAddress {
   street: String!
   complement: String
   number: String!
+  default: Boolean
   country: String!
   state: String!
   code: String!
@@ -106,6 +143,19 @@ type CreateUserResult {
   user: User
 }
 
+type ProductResult {
+  success: Boolean
+  errors: [Error]
+  product: Product
+}
+
+type ProductsResult {
+  success: Boolean
+  errors: [Error]
+  products: [Product]
+  total_items: Int
+}
+
 input DeleteRoleInput {
   id: String!
 }
@@ -131,19 +181,75 @@ input AddRoleUserInput {
 input DeleteUserInput {
   id: String!
 }
+input UserInput {
+  id: String!
+}
+
+input UpdateUserFildsInput {
+  firstName: String
+  lastName: String
+  email: String
+  address: NewAddress
+}
+
+input UpdateUserInput {
+  id: String!
+  data: UpdateUserFildsInput
+}
+
+input NewProductInput {
+  name: String!
+  descrition: String
+  variants: [NewVariantInput]
+
+}
+
+
+input NewVariantInput {
+  name: String!
+  assets: [NewAssetsInput]
+  price: Float!
+  quantity: Int!
+}
+
+input NewAssetsInput {
+  source: String!
+  width: Int
+  height: Int
+  
+}
+
+input ProductsInput {
+  take: Int
+}
 
 type Query {
+  # User
   users: UsersResult
-  user(id: ID!): UserResult
+  user(input: UserInput): UserResult
+  # Role
   roles: RolesResult 
+  # Product
+  products(input: ProductsInput): ProductsResult!
+}
+
+type DeleteAllProductsResult {
+ count: Int
 }
 
 type Mutation {
+  # User
   createUser(input: NewUserInput): CreateUserResult
+  updateUser(input: UpdateUserInput): UserResult!
   deleteUser(input: DeleteUserInput): DeleteResult!
+  # Role
   createRole(input: NewRole): CreateRoleResult!
   deleteRole(input: DeleteRoleInput): DeleteResult!
+  addRolesUser(input: AddRoleUserInput): DefaultResult!
+  # Auth
   login(input: LoginInput): LoginResult
   verify: User
-  addRolesUser(input: AddRoleUserInput): DefaultResult!
+  # Product
+  createProduct(input: NewProductInput): ProductResult!
+  deleteAllProducts: DeleteAllProductsResult
 }

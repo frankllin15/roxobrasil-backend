@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
 import { AuthModule } from './auth/auth.module';
 import { AppController } from './app.controller';
+import { ProductModule } from './product/product.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AppController } from './app.controller';
     }),
     RolesModule,
     AuthModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [],

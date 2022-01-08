@@ -20,6 +20,7 @@ export class NewAddress {
     street: string;
     complement?: Nullable<string>;
     number: string;
+    default?: Nullable<boolean>;
     country: string;
     state: string;
     code: string;
@@ -56,6 +57,45 @@ export class DeleteUserInput {
     id: string;
 }
 
+export class UserInput {
+    id: string;
+}
+
+export class UpdateUserFildsInput {
+    firstName?: Nullable<string>;
+    lastName?: Nullable<string>;
+    email?: Nullable<string>;
+    address?: Nullable<NewAddress>;
+}
+
+export class UpdateUserInput {
+    id: string;
+    data?: Nullable<UpdateUserFildsInput>;
+}
+
+export class NewProductInput {
+    name: string;
+    descrition?: Nullable<string>;
+    variants?: Nullable<Nullable<NewVariantInput>[]>;
+}
+
+export class NewVariantInput {
+    name: string;
+    assets?: Nullable<Nullable<NewAssetsInput>[]>;
+    price: number;
+    quantity: number;
+}
+
+export class NewAssetsInput {
+    source: string;
+    width?: Nullable<number>;
+    height?: Nullable<number>;
+}
+
+export class ProductsInput {
+    take?: Nullable<number>;
+}
+
 export class Role {
     id?: Nullable<string>;
     name?: Nullable<string>;
@@ -68,6 +108,7 @@ export class Address {
     id: string;
     street: string;
     complement?: Nullable<string>;
+    default: boolean;
     number: string;
     country: string;
     state: string;
@@ -85,6 +126,41 @@ export class User {
     roles?: Nullable<Nullable<Role>[]>;
     address?: Nullable<Nullable<Address>[]>;
     created_at: string;
+}
+
+export class Product {
+    id: string;
+    name: string;
+    descrition?: Nullable<string>;
+    variants?: Nullable<Nullable<Variant>[]>;
+    price?: Nullable<Price>;
+}
+
+export class Variant {
+    id: string;
+    name: string;
+    assets?: Nullable<Nullable<Assets>[]>;
+    product_id: string;
+    product: Product;
+    price: number;
+    quantity: number;
+    in_stock?: Nullable<boolean>;
+}
+
+export class Price {
+    id: number;
+    max: number;
+    min: number;
+    product?: Nullable<Product>;
+}
+
+export class Assets {
+    id: number;
+    source: string;
+    width?: Nullable<number>;
+    height?: Nullable<number>;
+    variant_id: string;
+    variant: Variant;
 }
 
 export class Error {
@@ -142,16 +218,37 @@ export class CreateUserResult {
     user?: Nullable<User>;
 }
 
+export class ProductResult {
+    success?: Nullable<boolean>;
+    errors?: Nullable<Nullable<Error>[]>;
+    product?: Nullable<Product>;
+}
+
+export class ProductsResult {
+    success?: Nullable<boolean>;
+    errors?: Nullable<Nullable<Error>[]>;
+    products?: Nullable<Nullable<Product>[]>;
+    total_items?: Nullable<number>;
+}
+
 export abstract class IQuery {
     abstract users(): Nullable<UsersResult> | Promise<Nullable<UsersResult>>;
 
-    abstract user(id: string): Nullable<UserResult> | Promise<Nullable<UserResult>>;
+    abstract user(input?: Nullable<UserInput>): Nullable<UserResult> | Promise<Nullable<UserResult>>;
 
     abstract roles(): Nullable<RolesResult> | Promise<Nullable<RolesResult>>;
+
+    abstract products(input?: Nullable<ProductsInput>): ProductsResult | Promise<ProductsResult>;
+}
+
+export class DeleteAllProductsResult {
+    count?: Nullable<number>;
 }
 
 export abstract class IMutation {
     abstract createUser(input?: Nullable<NewUserInput>): Nullable<CreateUserResult> | Promise<Nullable<CreateUserResult>>;
+
+    abstract updateUser(input?: Nullable<UpdateUserInput>): UserResult | Promise<UserResult>;
 
     abstract deleteUser(input?: Nullable<DeleteUserInput>): DeleteResult | Promise<DeleteResult>;
 
@@ -159,11 +256,15 @@ export abstract class IMutation {
 
     abstract deleteRole(input?: Nullable<DeleteRoleInput>): DeleteResult | Promise<DeleteResult>;
 
+    abstract addRolesUser(input?: Nullable<AddRoleUserInput>): DefaultResult | Promise<DefaultResult>;
+
     abstract login(input?: Nullable<LoginInput>): Nullable<LoginResult> | Promise<Nullable<LoginResult>>;
 
     abstract verify(): Nullable<User> | Promise<Nullable<User>>;
 
-    abstract addRolesUser(input?: Nullable<AddRoleUserInput>): DefaultResult | Promise<DefaultResult>;
+    abstract createProduct(input?: Nullable<NewProductInput>): ProductResult | Promise<ProductResult>;
+
+    abstract deleteAllProducts(): Nullable<DeleteAllProductsResult> | Promise<Nullable<DeleteAllProductsResult>>;
 }
 
 type Nullable<T> = T | null;

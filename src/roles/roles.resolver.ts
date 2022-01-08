@@ -4,8 +4,10 @@ import * as moment from 'moment';
 import { AuthService } from 'src/auth/auth.service';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { AddRoleUserInput, NewRole } from 'src/graphql';
+import { GraphqlHelper } from 'src/helpers/graphql.helper';
 import { PrismaService } from 'src/prisma.service';
 import { Roles } from './roles.decorator';
+import { RolesEnum } from './roles.enum';
 import { RolesGuard } from './roles.guard';
 
 @Resolver('Roles')
@@ -18,7 +20,7 @@ export class RolesResolver {
   ) {}
 
   @Query('roles')
-  @Roles('ADMIN')
+  @Roles(RolesEnum.ADMIN)
   async roles() {
     try {
       const roles = this.prisma.role.findMany();
@@ -29,10 +31,7 @@ export class RolesResolver {
         errors: [],
       };
     } catch (e) {
-      return {
-        message: e.message,
-        code: e.code,
-      };
+      return GraphqlHelper.createGenericErrorResult(e);
     }
   }
 
@@ -52,15 +51,7 @@ export class RolesResolver {
       };
     } catch (e) {
       console.log(e);
-      return {
-        errors: [
-          {
-            message: e.messagem,
-            code: e.code,
-          },
-        ],
-        success: false,
-      };
+      return GraphqlHelper.createGenericErrorResult(e);
     }
   }
 
@@ -74,15 +65,7 @@ export class RolesResolver {
         success: true,
       };
     } catch (e) {
-      return {
-        success: false,
-        errors: [
-          {
-            message: e.message,
-            code: e.code,
-          },
-        ],
-      };
+      return GraphqlHelper.createGenericErrorResult(e);
     }
   }
 
@@ -102,15 +85,7 @@ export class RolesResolver {
         success: true,
       };
     } catch (e) {
-      return {
-        success: false,
-        errors: [
-          {
-            message: e.message,
-            code: e.code,
-          },
-        ],
-      };
+      return GraphqlHelper.createGenericErrorResult(e);
     }
   }
 }

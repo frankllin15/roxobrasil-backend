@@ -1,5 +1,14 @@
-import moment from 'moment';
+const variats = [
+  { price: 2 },
+  { price: 22 },
+  { price: 23 },
+  { price: 26 },
+  { price: 62 },
+];
 
-const data = moment().format('DD/MM/YYYY h:mm:ss');
+// const max = variats.reduce((prev, current) => {
+//   return current.price > prev ? current.price : prev;
+// }, variats[0].price);
+const max = Math.max([1, 2]);
 
-console.log(data);
+console.log(max);

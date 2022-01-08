@@ -23,6 +23,7 @@ model Address {
   id          String   @id
   street      String
   complement  String?
+  default     Boolean @default(false)
   number      String
   country     String
   state       String
@@ -40,4 +41,41 @@ model User {
   roles      Role[]
   address    Address[]
   created_at String
+}
+
+model Assets {
+  id Int @id @default(autoincrement())
+  source String
+  width Int?
+  height Int?
+  variant_id String
+  variant Variant @relation(fields: [variant_id], references: [id], onDelete: Cascade)
+}
+
+
+model Variant {
+  id String @id
+  name String
+  assets Assets[]
+  product_id String
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  price Float
+  quantity Int
+  in_stock Boolean?
+}
+
+model Price {
+  id Int @id @default(autoincrement())
+  max Float
+  min Float
+  product_id String
+  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+}
+
+model Product {
+  id String @id
+  name String
+  descrition String?
+  variants Variant[]
+  price Price?
 }

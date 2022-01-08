@@ -38,13 +38,10 @@ export class AuthService {
       throw new NotFoundException('Invalid email');
     }
 
-    console.log(input);
-
     const isPasswordValid = await AuthHelper.validate(
       input.password,
       found.password,
     );
-    console.log(isPasswordValid);
 
     if (!isPasswordValid) {
       throw new NotFoundException('Invalid email or password');

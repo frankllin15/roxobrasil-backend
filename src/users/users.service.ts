@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { AuthHelper } from 'src/auth/auth.helper';
-import { DeleteUserInput, NewUserInput } from 'src/graphql';
+import {
+  DeleteUserInput,
+  NewUserInput,
+  UpdateUserInput,
+  User,
+} from 'src/graphql';
 import { dateNow } from 'src/helpers/moment.helper';
 import { PrismaService } from 'src/prisma.service';
 import { v4 as uuid } from 'uuid';
@@ -17,6 +22,15 @@ export class UsersService {
 
     return user;
   }
+  public async getUserById(id: string): Promise<User> {
+    const user = (await this.prisma.user.findUnique({
+      where: { id: id },
+      include: { roles: true, address: true },
+    })) as User;
+
+    return user;
+  }
+
   public async getUserRolesByEmail(email: string) {
     const user = await this.prisma.user.findUnique({
       where: { email: email },
@@ -53,6 +67,8 @@ export class UsersService {
   public async createUser(input: NewUserInput) {
     const { password, address, roles, ...data } = input;
 
+    address.default = true;
+
     const hashedPassword = await AuthHelper.hash(password);
 
     return this.prisma.user.create({
@@ -71,6 +87,26 @@ export class UsersService {
         address: true,
       },
     });
+  }
+
+  public async updateUser(input: UpdateUserInput) {
+    const { address, ...data } = input.data;
+
+    if (address.default) {
+      await this.prisma.address.updateMany({
+        where: { AND: { user_id: input.id, default: true } },
+        data: { default: false },
+      });
+    }
+
+    return (await this.prisma.user.update({
+      data: {
+        ...data,
+        address: { create: { ...address, id: uuid() } },
+      },
+      where: { id: input.id },
+      include: { address: true },
+    })) as User;
   }
 
   public async deleteUser(input: DeleteUserInput) {
