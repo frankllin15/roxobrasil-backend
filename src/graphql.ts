@@ -84,6 +84,8 @@ export class NewVariantInput {
     assets?: Nullable<Nullable<NewAssetsInput>[]>;
     price: number;
     quantity: number;
+    size?: Nullable<string>;
+    color?: Nullable<string>;
 }
 
 export class NewAssetsInput {
@@ -92,8 +94,54 @@ export class NewAssetsInput {
     height?: Nullable<number>;
 }
 
-export class ProductsInput {
+export class GetListInput {
     take?: Nullable<number>;
+}
+
+export class GetProductBySlugInput {
+    slug: string;
+}
+
+export class DeleteInput {
+    id: string;
+}
+
+export class UpdateProductFieldsInput {
+    name?: Nullable<string>;
+    descrition?: Nullable<string>;
+    variants?: Nullable<Nullable<NewVariantInput>[]>;
+    collections?: Nullable<Nullable<ConnectionInput>[]>;
+}
+
+export class UpdateProductInput {
+    id: string;
+    data?: Nullable<UpdateProductFieldsInput>;
+}
+
+export class UpdateVariantsFielsInput {
+    id: string;
+    name?: Nullable<string>;
+    assets?: Nullable<Nullable<NewAssetsInput>[]>;
+    price?: Nullable<number>;
+    quantity?: Nullable<number>;
+    size?: Nullable<string>;
+    color?: Nullable<string>;
+}
+
+export class UpdateVariantsInput {
+    product_id: string;
+    variants?: Nullable<Nullable<UpdateVariantsFielsInput>[]>;
+}
+
+export class ConnectionInput {
+    id?: Nullable<string>;
+}
+
+export class NewCollectionInput {
+    name: string;
+    description?: Nullable<string>;
+    parent?: Nullable<Nullable<ConnectionInput>[]>;
+    children?: Nullable<Nullable<ConnectionInput>[]>;
 }
 
 export class Role {
@@ -131,17 +179,21 @@ export class User {
 export class Product {
     id: string;
     name: string;
+    slug: string;
     descrition?: Nullable<string>;
     variants?: Nullable<Nullable<Variant>[]>;
     price?: Nullable<Price>;
+    collections?: Nullable<Nullable<Collection>[]>;
 }
 
 export class Variant {
     id: string;
     name: string;
+    size?: Nullable<string>;
+    color?: Nullable<string>;
+    info?: Nullable<string>;
     assets?: Nullable<Nullable<Assets>[]>;
-    product_id: string;
-    product: Product;
+    product?: Nullable<Product>;
     price: number;
     quantity: number;
     in_stock?: Nullable<boolean>;
@@ -159,8 +211,19 @@ export class Assets {
     source: string;
     width?: Nullable<number>;
     height?: Nullable<number>;
+    mime_type?: Nullable<string>;
     variant_id: string;
     variant: Variant;
+}
+
+export class Collection {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    products?: Nullable<Nullable<Product>[]>;
+    children?: Nullable<Nullable<Collection>[]>;
+    parent?: Nullable<Nullable<Collection>[]>;
+    created_at?: Nullable<string>;
 }
 
 export class Error {
@@ -231,6 +294,28 @@ export class ProductsResult {
     total_items?: Nullable<number>;
 }
 
+export class VariantsResult {
+    success?: Nullable<boolean>;
+    errors?: Nullable<Nullable<Error>[]>;
+    variants?: Nullable<Nullable<Variant>[]>;
+}
+
+export class CollectionResult {
+    success?: Nullable<boolean>;
+    errors?: Nullable<Nullable<Error>[]>;
+    collection?: Nullable<Collection>;
+}
+
+export class CollectionsResult {
+    success?: Nullable<boolean>;
+    errors?: Nullable<Nullable<Error>[]>;
+    collections?: Nullable<Nullable<Collection>[]>;
+}
+
+export class DeleteAllProductsResult {
+    count?: Nullable<number>;
+}
+
 export abstract class IQuery {
     abstract users(): Nullable<UsersResult> | Promise<Nullable<UsersResult>>;
 
@@ -238,11 +323,11 @@ export abstract class IQuery {
 
     abstract roles(): Nullable<RolesResult> | Promise<Nullable<RolesResult>>;
 
-    abstract products(input?: Nullable<ProductsInput>): ProductsResult | Promise<ProductsResult>;
-}
+    abstract products(input?: Nullable<GetListInput>): ProductsResult | Promise<ProductsResult>;
 
-export class DeleteAllProductsResult {
-    count?: Nullable<number>;
+    abstract getProductBySlug(input?: Nullable<GetProductBySlugInput>): ProductResult | Promise<ProductResult>;
+
+    abstract collections(input?: Nullable<GetListInput>): CollectionsResult | Promise<CollectionsResult>;
 }
 
 export abstract class IMutation {
@@ -264,7 +349,17 @@ export abstract class IMutation {
 
     abstract createProduct(input?: Nullable<NewProductInput>): ProductResult | Promise<ProductResult>;
 
+    abstract deleteProduct(input?: Nullable<DeleteInput>): DefaultResult | Promise<DefaultResult>;
+
     abstract deleteAllProducts(): Nullable<DeleteAllProductsResult> | Promise<Nullable<DeleteAllProductsResult>>;
+
+    abstract updateProduct(input?: Nullable<UpdateProductInput>): ProductResult | Promise<ProductResult>;
+
+    abstract updateVariants(input?: Nullable<UpdateVariantsInput>): VariantsResult | Promise<VariantsResult>;
+
+    abstract createCollection(input?: Nullable<NewCollectionInput>): CollectionResult | Promise<CollectionResult>;
+
+    abstract deleteCollection(input?: Nullable<DeleteInput>): DefaultResult | Promise<DefaultResult>;
 }
 
 type Nullable<T> = T | null;

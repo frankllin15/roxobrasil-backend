@@ -33,17 +33,21 @@ type User {
 type Product {
   id: String!
   name: String!
+  slug: String!
   descrition: String
   variants: [Variant]
   price: Price
+  collections: [Collection]
 }
 
 type Variant {
   id: String!
   name: String!
+  size: String
+  color: String
+  info: String
   assets: [Assets]
-  product_id: String!
-  product: Product!
+  product: Product
   price: Float!
   quantity: Int!
   in_stock: Boolean
@@ -61,8 +65,19 @@ type Assets {
   source: String!
   width: Int
   height: Int
+  mime_type: String
   variant_id: String!
   variant: Variant!
+}
+
+type Collection {
+  id: String!
+  name: String!
+  description: String
+  products: [Product]
+  children: [Collection]
+  parent: [Collection]
+  created_at: String
 }
 
 input NewUserInput {
@@ -156,6 +171,25 @@ type ProductsResult {
   total_items: Int
 }
 
+type VariantsResult {
+  success: Boolean
+  errors: [Error]
+  variants: [Variant]
+}
+
+type CollectionResult {
+  success: Boolean
+  errors: [Error]
+  collection: Collection
+}
+
+
+type CollectionsResult {
+  success: Boolean
+  errors: [Error]
+  collections: [Collection]
+}
+
 input DeleteRoleInput {
   id: String!
 }
@@ -210,6 +244,8 @@ input NewVariantInput {
   assets: [NewAssetsInput]
   price: Float!
   quantity: Int!
+  size: String
+  color: String
 }
 
 input NewAssetsInput {
@@ -219,8 +255,58 @@ input NewAssetsInput {
   
 }
 
-input ProductsInput {
+input GetListInput {
   take: Int
+}
+
+input GetProductBySlugInput {
+  slug: String!
+}
+
+input DeleteInput {
+  id: String!
+}
+
+input UpdateProductFieldsInput {
+  name: String
+  descrition: String
+  variants: [NewVariantInput]
+  collections: [ConnectionInput]
+}
+
+input UpdateProductInput {
+  id: String!
+  data: UpdateProductFieldsInput
+}
+
+input UpdateVariantsFielsInput {
+  id: String!
+  name: String
+  assets: [NewAssetsInput]
+  price: Float
+  quantity: Int
+  size: String
+  color: String
+}
+
+input UpdateVariantsInput {
+  product_id: String! 
+  variants: [UpdateVariantsFielsInput]
+}
+
+input ConnectionInput {
+  id: String
+}
+
+input NewCollectionInput {
+  name: String!
+  description: String
+  parent: [ConnectionInput]
+  children: [ConnectionInput]
+}
+
+type DeleteAllProductsResult {
+ count: Int
 }
 
 type Query {
@@ -230,11 +316,10 @@ type Query {
   # Role
   roles: RolesResult 
   # Product
-  products(input: ProductsInput): ProductsResult!
-}
-
-type DeleteAllProductsResult {
- count: Int
+  products(input: GetListInput): ProductsResult!
+  getProductBySlug(input: GetProductBySlugInput): ProductResult!
+  # Collections
+  collections(input: GetListInput): CollectionsResult!
 }
 
 type Mutation {
@@ -251,5 +336,12 @@ type Mutation {
   verify: User
   # Product
   createProduct(input: NewProductInput): ProductResult!
+  deleteProduct(input: DeleteInput): DefaultResult!
   deleteAllProducts: DeleteAllProductsResult
+  updateProduct(input: UpdateProductInput): ProductResult!
+  # Variat
+  updateVariants(input: UpdateVariantsInput): VariantsResult!
+  # Collections
+  createCollection(input: NewCollectionInput): CollectionResult!
+  deleteCollection(input: DeleteInput): DefaultResult!
 }

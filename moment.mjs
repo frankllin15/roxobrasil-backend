@@ -1,14 +1,21 @@
-const variats = [
-  { price: 2 },
-  { price: 22 },
-  { price: 23 },
-  { price: 26 },
-  { price: 62 },
+let arr1 = [
+  {
+    name: 'Camisa Muito Longa PP Verde',
+    price: 5.22,
+    quantity: 12,
+    size: 'PP',
+    color: 'verde',
+  },
+  {
+    name: 'Camisa Muito Longa PP Azul',
+    price: 110.22,
+    quantity: 12,
+    size: 'PP',
+    color: 'azul',
+  },
 ];
+let arr2 = [{ price: 12.33 }, { price: 33.12 }];
 
-// const max = variats.reduce((prev, current) => {
-//   return current.price > prev ? current.price : prev;
-// }, variats[0].price);
-const max = Math.max([1, 2]);
+let result = arr1.concat(arr2);
 
-console.log(max);
+console.log(result);

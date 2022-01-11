@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = "postgresql://postgres:98033809@postgres:5432/roxobrasil"
 }
 
 model Role {
@@ -50,12 +50,16 @@ model Assets {
   height Int?
   variant_id String
   variant Variant @relation(fields: [variant_id], references: [id], onDelete: Cascade)
+  mime_type String?
 }
 
 
 model Variant {
   id String @id
   name String
+  size String?
+  color String?
+  info String?
   assets Assets[]
   product_id String
   product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
@@ -72,10 +76,23 @@ model Price {
   product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
 
+model Collection {
+  id String @id @default(cuid())
+  name String
+  description String?
+  products Product[]
+  children Collection[]  @relation("ChildrenParent", references: [id], onDelete: Cascade)
+  parent  Collection[]  @relation("ChildrenParent", references: [id], onDelete: Cascade)
+  created_at String?
+}
+
 model Product {
   id String @id
   name String
   descrition String?
   variants Variant[]
   price Price?
+  slug String @unique
+  collections Collection[]
+  @@index([slug])
 }
