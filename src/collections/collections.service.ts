@@ -3,6 +3,7 @@ import {
   Collection,
   DeleteInput,
   GetListInput,
+  IdInput,
   NewCollectionInput,
 } from 'src/graphql';
 import { PrismaService } from 'src/prisma.service';
@@ -32,6 +33,13 @@ export class CollectionsService {
         children: true,
         parent: true,
       },
+    });
+  }
+
+  async getCollection(input: IdInput): Promise<Collection> {
+    return await this.prismaService.collection.findUnique({
+      where: { id: input.id },
+      include: { products: true },
     });
   }
 

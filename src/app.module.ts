@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { ProductModule } from './product/product.module';
 import { VariantsModule } from './variants/variants.module';
 import { CollectionsModule } from './collections/collections.module';
+import { DiscountModule } from './discount/discount.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CollectionsModule } from './collections/collections.module';
     ProductModule,
     VariantsModule,
     CollectionsModule,
+    DiscountModule,
   ],
   controllers: [AppController],
   providers: [],

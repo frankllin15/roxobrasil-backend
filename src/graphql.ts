@@ -7,6 +7,11 @@
 
 /* tslint:disable */
 /* eslint-disable */
+export enum DiscounType {
+    PERCENT = "PERCENT",
+    VALUE = "VALUE"
+}
+
 export class NewUserInput {
     firstName: string;
     lastName?: Nullable<string>;
@@ -110,7 +115,7 @@ export class UpdateProductFieldsInput {
     name?: Nullable<string>;
     descrition?: Nullable<string>;
     variants?: Nullable<Nullable<NewVariantInput>[]>;
-    collections?: Nullable<Nullable<ConnectionInput>[]>;
+    collections?: Nullable<Nullable<IdInput>[]>;
 }
 
 export class UpdateProductInput {
@@ -133,15 +138,29 @@ export class UpdateVariantsInput {
     variants?: Nullable<Nullable<UpdateVariantsFielsInput>[]>;
 }
 
-export class ConnectionInput {
+export class IdInput {
     id?: Nullable<string>;
 }
 
 export class NewCollectionInput {
     name: string;
     description?: Nullable<string>;
-    parent?: Nullable<Nullable<ConnectionInput>[]>;
-    children?: Nullable<Nullable<ConnectionInput>[]>;
+    parent?: Nullable<Nullable<IdInput>[]>;
+    children?: Nullable<Nullable<IdInput>[]>;
+}
+
+export class NewDiscountInput {
+    name: string;
+    description?: Nullable<string>;
+    type?: Nullable<DiscounType>;
+    products?: Nullable<Nullable<IdInput>[]>;
+    value: number;
+    expires: string;
+}
+
+export class ProductDiscountInput {
+    discount_id?: Nullable<string>;
+    products?: Nullable<Nullable<IdInput>[]>;
 }
 
 export class Role {
@@ -184,6 +203,8 @@ export class Product {
     variants?: Nullable<Nullable<Variant>[]>;
     price?: Nullable<Price>;
     collections?: Nullable<Nullable<Collection>[]>;
+    discount?: Nullable<Nullable<Discount>[]>;
+    SKU?: Nullable<string>;
 }
 
 export class Variant {
@@ -224,6 +245,17 @@ export class Collection {
     children?: Nullable<Nullable<Collection>[]>;
     parent?: Nullable<Nullable<Collection>[]>;
     created_at?: Nullable<string>;
+}
+
+export class Discount {
+    id: string;
+    name: string;
+    description?: Nullable<string>;
+    type: DiscounType;
+    products?: Nullable<Nullable<Product>[]>;
+    value: number;
+    created_at: string;
+    expires: string;
 }
 
 export class Error {
@@ -312,6 +344,18 @@ export class CollectionsResult {
     collections?: Nullable<Nullable<Collection>[]>;
 }
 
+export class DiscountResult {
+    errors?: Nullable<Nullable<Error>[]>;
+    success?: Nullable<boolean>;
+    discount?: Nullable<Discount>;
+}
+
+export class DiscountsResult {
+    errors?: Nullable<Nullable<Error>[]>;
+    success?: Nullable<boolean>;
+    discounts?: Nullable<Nullable<Discount>[]>;
+}
+
 export class DeleteAllProductsResult {
     count?: Nullable<number>;
 }
@@ -328,6 +372,12 @@ export abstract class IQuery {
     abstract getProductBySlug(input?: Nullable<GetProductBySlugInput>): ProductResult | Promise<ProductResult>;
 
     abstract collections(input?: Nullable<GetListInput>): CollectionsResult | Promise<CollectionsResult>;
+
+    abstract collection(input?: Nullable<IdInput>): CollectionResult | Promise<CollectionResult>;
+
+    abstract discount(input?: Nullable<IdInput>): DiscountResult | Promise<DiscountResult>;
+
+    abstract discounts(input?: Nullable<GetListInput>): DiscountsResult | Promise<DiscountsResult>;
 }
 
 export abstract class IMutation {
@@ -360,6 +410,12 @@ export abstract class IMutation {
     abstract createCollection(input?: Nullable<NewCollectionInput>): CollectionResult | Promise<CollectionResult>;
 
     abstract deleteCollection(input?: Nullable<DeleteInput>): DefaultResult | Promise<DefaultResult>;
+
+    abstract createDiscount(input?: Nullable<NewDiscountInput>): DiscountResult | Promise<DiscountResult>;
+
+    abstract addProductsDiscount(input?: Nullable<ProductDiscountInput>): DiscountResult | Promise<DiscountResult>;
+
+    abstract removeProductsDiscount(input?: Nullable<ProductDiscountInput>): DiscountResult | Promise<DiscountResult>;
 }
 
 type Nullable<T> = T | null;

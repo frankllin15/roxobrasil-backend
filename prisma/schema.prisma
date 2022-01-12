@@ -86,11 +86,29 @@ model Collection {
   created_at String?
 }
 
+enum DiscountType {
+  PERCENT
+  VALUE
+}
+
+model Discount {
+  id String @id @default(cuid())
+  name String
+  description String?
+  type DiscountType
+  products Product[]
+  value Float
+  created_at String
+  expires String
+}
+
 model Product {
   id String @id
   name String
   descrition String?
   variants Variant[]
+  discount Discount[]
+  SKU String?
   price Price?
   slug String @unique
   collections Collection[]

@@ -55,6 +55,7 @@ export class ProductService {
         variants: { include: { assets: true } },
         price: true,
         collections: true,
+        discount: true,
       },
     });
 
@@ -75,45 +76,26 @@ export class ProductService {
 
   async updateProduct(input: UpdateProductInput): Promise<any> {
     const { variants, collections, ...data } = input.data;
-    const price = { max: undefined, min: undefined };
 
-    if (variants?.length > 0) {
-      const prevVariatsPrice = await this.prismaServise.variant.findMany({
-        where: { product_id: input.id },
-        select: { price: true },
-      });
-
-      const variatsPrice = prevVariatsPrice
-        .concat(variants.map(({ price }) => ({ price })))
-        .map(({ price }) => price);
-
-      price.max = MathHelper.max(variatsPrice);
-      price.min = MathHelper.min(variatsPrice);
-    }
-
-    const priceAndVariats =
-      variants?.length > 0
-        ? {
-            price: { update: { min: price.min, max: price.max } },
-            variants: {
-              create: variants.map(({ assets, ...variatsData }) => ({
-                id: uuid(),
-                ...variatsData,
-                assets: { create: assets },
-              })),
-            },
-          }
-        : {};
-
-    return await this.prismaServise.product.update({
+    const product = this.prismaServise.product.update({
       where: { id: input.id },
       data: {
         collections: { connect: collections },
         ...data,
-        ...priceAndVariats,
+        variants: {
+          create: variants.map(({ assets, ...variatsData }) => ({
+            id: uuid(),
+            ...variatsData,
+            assets: { create: assets },
+          })),
+        },
       },
       include: { price: true, variants: true, collections: true },
     });
+
+    this.updatePriceRange((await product).id);
+
+    return product;
   }
   async deleteProduct(input: DeleteInput) {
     await this.prismaServise.product.delete({ where: { id: input.id } });
@@ -128,7 +110,6 @@ export class ProductService {
   }
 
   async updatePriceRange(id: string) {
-    console.log('Chamou o metodo');
     const product = await this.prismaServise.product.findUnique({
       where: { id: id },
       select: { price: true, variants: { select: { price: true } } },
@@ -136,15 +117,15 @@ export class ProductService {
 
     const variantsPrice = product.variants.map((variant) => variant.price);
 
-    const priceRage = {
-      min: MathHelper.min(variantsPrice),
-      max: MathHelper.max(variantsPrice),
-    };
-
-    return await this.prismaServise.product.update({
+    await this.prismaServise.product.update({
       where: { id: id },
       data: {
-        price: { update: priceRage },
+        price: {
+          update: {
+            min: MathHelper.min(variantsPrice),
+            max: MathHelper.max(variantsPrice),
+          },
+        },
       },
     });
   }

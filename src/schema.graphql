@@ -1,3 +1,8 @@
+enum DiscounType {
+  PERCENT
+  VALUE
+}
+
 type Role {
   id: String
   name: String
@@ -38,6 +43,8 @@ type Product {
   variants: [Variant]
   price: Price
   collections: [Collection]
+  discount: [Discount]
+  SKU: String
 }
 
 type Variant {
@@ -78,6 +85,17 @@ type Collection {
   children: [Collection]
   parent: [Collection]
   created_at: String
+}
+
+type Discount {
+  id: String!
+  name: String!
+  description: String
+  type: DiscounType!
+  products: [Product]
+  value: Float!
+  created_at: String!
+  expires: String!
 }
 
 input NewUserInput {
@@ -190,6 +208,19 @@ type CollectionsResult {
   collections: [Collection]
 }
 
+type DiscountResult {
+  errors: [Error]
+  success: Boolean
+  discount: Discount
+}
+
+
+type DiscountsResult {
+  errors: [Error]
+  success: Boolean
+  discounts: [Discount]
+}
+
 input DeleteRoleInput {
   id: String!
 }
@@ -271,7 +302,7 @@ input UpdateProductFieldsInput {
   name: String
   descrition: String
   variants: [NewVariantInput]
-  collections: [ConnectionInput]
+  collections: [IdInput]
 }
 
 input UpdateProductInput {
@@ -294,15 +325,29 @@ input UpdateVariantsInput {
   variants: [UpdateVariantsFielsInput]
 }
 
-input ConnectionInput {
+input IdInput {
   id: String
 }
 
 input NewCollectionInput {
   name: String!
   description: String
-  parent: [ConnectionInput]
-  children: [ConnectionInput]
+  parent: [IdInput]
+  children: [IdInput]
+}
+
+input NewDiscountInput {
+  name: String!
+  description: String
+  type: DiscounType
+  products: [IdInput]
+  value: Float!
+  expires: String!
+}
+
+input ProductDiscountInput {
+  discount_id: String
+  products: [IdInput]
 }
 
 type DeleteAllProductsResult {
@@ -320,6 +365,10 @@ type Query {
   getProductBySlug(input: GetProductBySlugInput): ProductResult!
   # Collections
   collections(input: GetListInput): CollectionsResult!
+  collection(input: IdInput):CollectionResult!
+  # Discount
+  discount(input: IdInput): DiscountResult!
+  discounts(input: GetListInput): DiscountsResult!
 }
 
 type Mutation {
@@ -344,4 +393,8 @@ type Mutation {
   # Collections
   createCollection(input: NewCollectionInput): CollectionResult!
   deleteCollection(input: DeleteInput): DefaultResult!
+  # Discount
+  createDiscount(input: NewDiscountInput): DiscountResult!
+  addProductsDiscount(input: ProductDiscountInput): DiscountResult!
+  removeProductsDiscount(input: ProductDiscountInput): DiscountResult!
 }

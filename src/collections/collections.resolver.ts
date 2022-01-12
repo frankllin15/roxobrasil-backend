@@ -5,6 +5,7 @@ import {
   DefaultResult,
   DeleteInput,
   GetListInput,
+  IdInput,
   NewCollectionInput,
 } from 'src/graphql';
 import { GraphqlHelper } from 'src/helpers/graphql.helper';
@@ -24,6 +25,19 @@ export class CollectionsResolver {
       return {
         success: true,
         collections,
+      };
+    } catch (e) {
+      return GraphqlHelper.createGenericErrorResult(e);
+    }
+  }
+  @Query('collection')
+  async collection(@Args('input') input: IdInput): Promise<CollectionResult> {
+    try {
+      const collection = await this.collectionsService.getCollection(input);
+
+      return {
+        success: true,
+        collection,
       };
     } catch (e) {
       return GraphqlHelper.createGenericErrorResult(e);
