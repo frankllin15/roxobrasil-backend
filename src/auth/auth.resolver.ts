@@ -1,6 +1,12 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
-import { LoginResult, NewUserInput, VerifyInput } from 'src/graphql';
+import {
+  CreateUserResult,
+  LoginResult,
+  NewUserInput,
+  VerifyInput,
+} from 'src/graphql';
+import { GraphqlHelper } from 'src/helpers/graphql.helper';
 import { AuthService } from './auth.service';
 import { GqlAuthGuard } from './guards/gql-auth.guard';
 
@@ -10,12 +16,31 @@ export class AuthResolver {
 
   @Mutation('login')
   async login(@Args('input') input: any): Promise<LoginResult> {
-    return this.authService.login(input);
+    try {
+      const payload = await this.authService.login(input);
+      return {
+        ...payload,
+        success: true,
+      };
+    } catch (e) {
+      return GraphqlHelper.createGenericErrorResult(e);
+    }
   }
 
   @Mutation('createUser')
-  async createUser(@Args('input') input: NewUserInput) {
-    return this.authService.register(input);
+  async createUser(
+    @Args('input') input: NewUserInput,
+  ): Promise<CreateUserResult> {
+    try {
+      const payload = await this.authService.register(input);
+
+      return {
+        success: true,
+        ...payload,
+      };
+    } catch (e) {
+      return GraphqlHelper.createGenericErrorResult(e);
+    }
   }
 
   @UseGuards(GqlAuthGuard)

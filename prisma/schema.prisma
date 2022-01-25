@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:98033809@postgres:5432/roxobrasil"
+  url      = "postgresql://postgres:98033809@postgres:5432/roxobrasil&connect_timeout=15"
 }
 
 model Role {
@@ -15,7 +15,8 @@ model Role {
   name        String
   description String
   users   User[]
-  created_at  String
+  created_at DateTime @default(now())
+
 
 }
 
@@ -27,9 +28,13 @@ model Address {
   number      String
   country     String
   state       String
+  district String
   code        String
   user_id String
   user    User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  order Order[]
+  created_at DateTime @default(now())
+
 }
 
 model User {
@@ -38,9 +43,12 @@ model User {
   lastName   String?
   email      String    @unique
   password   String
+  phoneNumber String? 
   roles      Role[]
   address    Address[]
-  created_at String
+  payment_methods Payment[]
+  created_at DateTime @default(now())
+
 }
 
 model Assets {
@@ -59,6 +67,7 @@ model Variant {
   name String
   size String?
   color String?
+  SKU String?
   info String?
   assets Assets[]
   product_id String
@@ -66,6 +75,9 @@ model Variant {
   price Float
   quantity Int
   in_stock Boolean?
+  order Order[]
+  carts Cart[]
+
 }
 
 model Price {
@@ -81,9 +93,9 @@ model Collection {
   name String
   description String?
   products Product[]
-  children Collection[]  @relation("ChildrenParent", references: [id], onDelete: Cascade)
-  parent  Collection[]  @relation("ChildrenParent", references: [id], onDelete: Cascade)
-  created_at String?
+  children Collection[]  @relation("ChildrenParent", references: [id])
+  parent  Collection[]  @relation("ChildrenParent", references: [id])
+  created_at DateTime @default(now())
 }
 
 enum DiscountType {
@@ -98,7 +110,7 @@ model Discount {
   type DiscountType
   products Product[]
   value Float
-  created_at String
+  created_at DateTime @default(now())
   expires String
 }
 
@@ -108,9 +120,45 @@ model Product {
   descrition String?
   variants Variant[]
   discount Discount[]
-  SKU String?
   price Price?
   slug String @unique
   collections Collection[]
+  created_at DateTime @default(now())
   @@index([slug])
+}
+
+model Cart {
+  id String @id @default(cuid())
+  products Variant[]
+  user_id String
+  created_at DateTime @default(now())
+
+}
+
+model Order {
+  id String @id @default(cuid())
+  products Variant[]
+  payment_id String
+  payment Payment @relation(fields: [payment_id], references: [id], onDelete:SetNull)
+  status String
+  delivery_address Address @relation(fields: [address_id], references: [id])
+  address_id String
+  created_at DateTime @default(now())
+}
+enum PaymentMethod {
+  credit
+  debit
+  payment_slip
+
+}
+
+model Payment {
+  id String @id @default(uuid())
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id String
+  method PaymentMethod
+  card_number String?
+  security_code String?
+  validate DateTime
+  order Order[]
 }

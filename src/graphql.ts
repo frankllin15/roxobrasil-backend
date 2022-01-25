@@ -7,10 +7,8 @@
 
 /* tslint:disable */
 /* eslint-disable */
-export enum DiscounType {
-    PERCENT = "PERCENT",
-    VALUE = "VALUE"
-}
+export type DiscounType = "PERCENT" | "VALUE";
+export type PaymentMethod = "credit" | "debit" | "payment_slip";
 
 export class NewUserInput {
     firstName: string;
@@ -18,6 +16,7 @@ export class NewUserInput {
     email: string;
     password: string;
     address?: Nullable<NewAddress>;
+    phoneNumber?: Nullable<string>;
     roles: Nullable<string>[];
 }
 
@@ -27,6 +26,7 @@ export class NewAddress {
     number: string;
     default?: Nullable<boolean>;
     country: string;
+    district: string;
     state: string;
     code: string;
 }
@@ -107,10 +107,6 @@ export class GetProductBySlugInput {
     slug: string;
 }
 
-export class DeleteInput {
-    id: string;
-}
-
 export class UpdateProductFieldsInput {
     name?: Nullable<string>;
     descrition?: Nullable<string>;
@@ -142,6 +138,10 @@ export class IdInput {
     id?: Nullable<string>;
 }
 
+export class IdListInput {
+    ids?: Nullable<Nullable<string>[]>;
+}
+
 export class NewCollectionInput {
     name: string;
     description?: Nullable<string>;
@@ -155,7 +155,7 @@ export class NewDiscountInput {
     type?: Nullable<DiscounType>;
     products?: Nullable<Nullable<IdInput>[]>;
     value: number;
-    expires: string;
+    expires: Date;
 }
 
 export class ProductDiscountInput {
@@ -163,12 +163,26 @@ export class ProductDiscountInput {
     products?: Nullable<Nullable<IdInput>[]>;
 }
 
+export class NewCart {
+    products?: Nullable<Nullable<IdInput>[]>;
+    user_id: string;
+}
+
+export class UpdateCartFields {
+    products?: Nullable<Nullable<IdInput>[]>;
+}
+
+export class UpdateCartInput {
+    id: string;
+    data: UpdateCartFields;
+}
+
 export class Role {
     id?: Nullable<string>;
     name?: Nullable<string>;
     description?: Nullable<string>;
     Users?: Nullable<Nullable<User>[]>;
-    created_at?: Nullable<string>;
+    created_at?: Nullable<Date>;
 }
 
 export class Address {
@@ -178,10 +192,11 @@ export class Address {
     default: boolean;
     number: string;
     country: string;
+    district: string;
     state: string;
     code: string;
     user_id: string;
-    user: User;
+    created_at: Date;
 }
 
 export class User {
@@ -190,9 +205,36 @@ export class User {
     lastName?: Nullable<string>;
     email: string;
     password: string;
-    roles?: Nullable<Nullable<Role>[]>;
+    phoneNumber?: Nullable<string>;
     address?: Nullable<Nullable<Address>[]>;
-    created_at: string;
+    payment_method?: Nullable<Payment>;
+    roles?: Nullable<Nullable<Role>[]>;
+    created_at: Date;
+}
+
+export class Payment {
+    id: string;
+    user: User;
+    method?: Nullable<PaymentMethod>;
+    card_number?: Nullable<string>;
+    security_code?: Nullable<string>;
+    validate?: Nullable<Date>;
+}
+
+export class Order {
+    id: string;
+    products?: Nullable<Nullable<Variant>[]>;
+    payment: Payment;
+    status: string;
+    delivery_address: Address;
+    created_at?: Nullable<Date>;
+}
+
+export class Cart {
+    id: string;
+    products?: Nullable<Nullable<Product>[]>;
+    user_id: string;
+    created_at?: Nullable<Date>;
 }
 
 export class Product {
@@ -204,7 +246,7 @@ export class Product {
     price?: Nullable<Price>;
     collections?: Nullable<Nullable<Collection>[]>;
     discount?: Nullable<Nullable<Discount>[]>;
-    SKU?: Nullable<string>;
+    created_at?: Nullable<Date>;
 }
 
 export class Variant {
@@ -214,6 +256,7 @@ export class Variant {
     color?: Nullable<string>;
     info?: Nullable<string>;
     assets?: Nullable<Nullable<Assets>[]>;
+    SKU?: Nullable<string>;
     product?: Nullable<Product>;
     price: number;
     quantity: number;
@@ -233,8 +276,6 @@ export class Assets {
     width?: Nullable<number>;
     height?: Nullable<number>;
     mime_type?: Nullable<string>;
-    variant_id: string;
-    variant: Variant;
 }
 
 export class Collection {
@@ -244,7 +285,7 @@ export class Collection {
     products?: Nullable<Nullable<Product>[]>;
     children?: Nullable<Nullable<Collection>[]>;
     parent?: Nullable<Nullable<Collection>[]>;
-    created_at?: Nullable<string>;
+    created_at?: Nullable<Date>;
 }
 
 export class Discount {
@@ -254,8 +295,8 @@ export class Discount {
     type: DiscounType;
     products?: Nullable<Nullable<Product>[]>;
     value: number;
-    created_at: string;
-    expires: string;
+    created_at: Date;
+    expires: Date;
 }
 
 export class Error {
@@ -301,14 +342,18 @@ export class UsersResult {
 export class DeleteResult {
     errors?: Nullable<Nullable<Error>[]>;
     success?: Nullable<boolean>;
+    count?: Nullable<number>;
 }
 
 export class LoginResult {
+    success?: Nullable<boolean>;
     access_token?: Nullable<string>;
     user?: Nullable<User>;
 }
 
 export class CreateUserResult {
+    success?: Nullable<boolean>;
+    errors?: Nullable<Nullable<Error>[]>;
     access_token?: Nullable<string>;
     user?: Nullable<User>;
 }
@@ -316,13 +361,13 @@ export class CreateUserResult {
 export class ProductResult {
     success?: Nullable<boolean>;
     errors?: Nullable<Nullable<Error>[]>;
-    product?: Nullable<Product>;
+    item?: Nullable<Product>;
 }
 
 export class ProductsResult {
     success?: Nullable<boolean>;
     errors?: Nullable<Nullable<Error>[]>;
-    products?: Nullable<Nullable<Product>[]>;
+    items?: Nullable<Nullable<Product>[]>;
     total_items?: Nullable<number>;
 }
 
@@ -356,14 +401,32 @@ export class DiscountsResult {
     discounts?: Nullable<Nullable<Discount>[]>;
 }
 
-export class DeleteAllProductsResult {
-    count?: Nullable<number>;
+export class AddressResult {
+    success?: Nullable<boolean>;
+    errors?: Nullable<Nullable<Error>[]>;
+    address?: Nullable<Nullable<Address>[]>;
+}
+
+export class CartResult {
+    errors?: Nullable<Nullable<Error>[]>;
+    success?: Nullable<boolean>;
+    cart?: Nullable<Cart>;
+}
+
+export class CartsResult {
+    errors?: Nullable<Nullable<Error>[]>;
+    success?: Nullable<boolean>;
+    carts?: Nullable<Nullable<Cart>[]>;
 }
 
 export abstract class IQuery {
-    abstract users(): Nullable<UsersResult> | Promise<Nullable<UsersResult>>;
+    abstract users(): UsersResult | Promise<UsersResult>;
 
-    abstract user(input?: Nullable<UserInput>): Nullable<UserResult> | Promise<Nullable<UserResult>>;
+    abstract user(input?: Nullable<UserInput>): UserResult | Promise<UserResult>;
+
+    abstract userAddress(input?: Nullable<IdInput>): AddressResult | Promise<AddressResult>;
+
+    abstract userCart(input?: Nullable<IdInput>): CartResult | Promise<CartResult>;
 
     abstract roles(): Nullable<RolesResult> | Promise<Nullable<RolesResult>>;
 
@@ -378,6 +441,10 @@ export abstract class IQuery {
     abstract discount(input?: Nullable<IdInput>): DiscountResult | Promise<DiscountResult>;
 
     abstract discounts(input?: Nullable<GetListInput>): DiscountsResult | Promise<DiscountsResult>;
+
+    abstract cart(input?: Nullable<IdInput>): CartResult | Promise<CartResult>;
+
+    abstract carts(): CartsResult | Promise<CartsResult>;
 }
 
 export abstract class IMutation {
@@ -386,6 +453,8 @@ export abstract class IMutation {
     abstract updateUser(input?: Nullable<UpdateUserInput>): UserResult | Promise<UserResult>;
 
     abstract deleteUser(input?: Nullable<DeleteUserInput>): DeleteResult | Promise<DeleteResult>;
+
+    abstract deleteAddress(input?: Nullable<IdInput>): DefaultResult | Promise<DefaultResult>;
 
     abstract createRole(input?: Nullable<NewRole>): CreateRoleResult | Promise<CreateRoleResult>;
 
@@ -399,23 +468,29 @@ export abstract class IMutation {
 
     abstract createProduct(input?: Nullable<NewProductInput>): ProductResult | Promise<ProductResult>;
 
-    abstract deleteProduct(input?: Nullable<DeleteInput>): DefaultResult | Promise<DefaultResult>;
-
-    abstract deleteAllProducts(): Nullable<DeleteAllProductsResult> | Promise<Nullable<DeleteAllProductsResult>>;
+    abstract deleteProduct(input?: Nullable<IdInput>): DefaultResult | Promise<DefaultResult>;
 
     abstract updateProduct(input?: Nullable<UpdateProductInput>): ProductResult | Promise<ProductResult>;
 
     abstract updateVariants(input?: Nullable<UpdateVariantsInput>): VariantsResult | Promise<VariantsResult>;
 
-    abstract createCollection(input?: Nullable<NewCollectionInput>): CollectionResult | Promise<CollectionResult>;
+    abstract deleteVariants(input?: Nullable<IdListInput>): DeleteResult | Promise<DeleteResult>;
 
-    abstract deleteCollection(input?: Nullable<DeleteInput>): DefaultResult | Promise<DefaultResult>;
-
-    abstract createDiscount(input?: Nullable<NewDiscountInput>): DiscountResult | Promise<DiscountResult>;
+    abstract createCollection(input?: Nullable<NewCollectionInput>): DiscountResult | Promise<DiscountResult>;
 
     abstract addProductsDiscount(input?: Nullable<ProductDiscountInput>): DiscountResult | Promise<DiscountResult>;
 
     abstract removeProductsDiscount(input?: Nullable<ProductDiscountInput>): DiscountResult | Promise<DiscountResult>;
+
+    abstract deleteCollection(input?: Nullable<IdInput>): DefaultResult | Promise<DefaultResult>;
+
+    abstract createDiscount(input?: Nullable<NewDiscountInput>): DiscountResult | Promise<DiscountResult>;
+
+    abstract createCart(input?: Nullable<NewCart>): CartResult | Promise<CartResult>;
+
+    abstract updateCart(input?: Nullable<UpdateCartInput>): CartResult | Promise<CartResult>;
+
+    abstract deleteCart(input?: Nullable<IdInput>): DefaultResult | Promise<DefaultResult>;
 }
 
 type Nullable<T> = T | null;

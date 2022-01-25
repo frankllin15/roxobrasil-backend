@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { AuthHelper } from 'src/auth/auth.helper';
 import {
   DeleteUserInput,
+  IdInput,
   NewUserInput,
   UpdateUserInput,
   User,
 } from 'src/graphql';
-import { dateNow } from 'src/helpers/moment.helper';
+// import { dateNow } from 'src/helpers/moment.helper';
 import { PrismaService } from 'src/prisma.service';
 import { v4 as uuid } from 'uuid';
 
@@ -67,7 +68,8 @@ export class UsersService {
   public async createUser(input: NewUserInput) {
     const { password, address, roles, ...data } = input;
 
-    address.default = true;
+    address;
+    if (address?.code) address.default = true;
 
     const hashedPassword = await AuthHelper.hash(password);
 
@@ -79,12 +81,10 @@ export class UsersService {
         roles: {
           connect: roles.map((e) => ({ id: e })) || [],
         },
-        address: { create: { ...address, id: uuid() } },
-        created_at: dateNow(),
-      },
-      include: {
-        roles: true,
-        address: true,
+        address:
+          Object.keys(address || {}).length > 0
+            ? { create: { ...address, id: uuid() } }
+            : {},
       },
     });
   }
@@ -127,5 +127,27 @@ export class UsersService {
         ],
       };
     }
+  }
+
+  // public async createAddress(input: NewAddress): Promise<Address> {
+  //   return await this.prisma.user.update({where: {id: input.id}})
+  // }
+
+  public async getUserAddress(input: IdInput) {
+    return await this.prisma.address.findMany({
+      where: { user_id: input.id },
+      // include: { user: false },
+    });
+  }
+
+  public async deleteAddress(input: IdInput): Promise<void> {
+    await this.prisma.address.delete({ where: { id: input.id } });
+  }
+
+  public async getUserCart(input: IdInput): Promise<any> {
+    return await this.prisma.cart.findFirst({
+      where: { user_id: input.id },
+      include: { products: true },
+    });
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateVariantsInput } from 'src/graphql';
+import { IdListInput, UpdateVariantsInput } from 'src/graphql';
 import { PrismaService } from 'src/prisma.service';
 import { ProductService } from 'src/product/product.service';
 
@@ -31,5 +31,16 @@ export class VariantsService {
       this.productService.updatePriceRange(input.product_id);
     }
     return variants;
+  }
+
+  async deleteVariants(input: IdListInput) {
+    console.log(input);
+    return await this.prismaService.variant.deleteMany({
+      where: {
+        id: {
+          in: input.ids || [],
+        },
+      },
+    });
   }
 }

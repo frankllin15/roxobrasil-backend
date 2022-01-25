@@ -3,7 +3,6 @@ import {
   CollectionResult,
   CollectionsResult,
   DefaultResult,
-  DeleteInput,
   GetListInput,
   IdInput,
   NewCollectionInput,
@@ -62,7 +61,7 @@ export class CollectionsResolver {
 
   @Mutation('deleteCollection')
   async deleteCollection(
-    @Args('input') input: DeleteInput,
+    @Args('input') input: IdInput,
   ): Promise<DefaultResult> {
     try {
       await this.collectionsService.deleCollection(input);

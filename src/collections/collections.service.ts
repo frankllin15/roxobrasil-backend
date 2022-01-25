@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
   Collection,
-  DeleteInput,
   GetListInput,
   IdInput,
   NewCollectionInput,
@@ -43,7 +42,7 @@ export class CollectionsService {
     });
   }
 
-  async deleCollection(input: DeleteInput) {
+  async deleCollection(input: IdInput) {
     await this.prismaService.collection.delete({
       where: { id: input.id },
     });

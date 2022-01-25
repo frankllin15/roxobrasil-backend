@@ -7,6 +7,10 @@ import {
   UserInput,
   UserResult,
   UpdateUserInput,
+  IdInput,
+  AddressResult,
+  DefaultResult,
+  CartResult,
 } from 'src/graphql';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { Roles } from 'src/roles/roles.decorator';
@@ -38,6 +42,46 @@ export class UserResolver {
   @Roles(RolesEnum.ADMIN)
   async users() {
     return this.usersService.getUsers();
+  }
+
+  @Query('userAddress')
+  async userAdress(@Args('input') input: IdInput): Promise<AddressResult> {
+    try {
+      const address = await this.usersService.getUserAddress(input);
+
+      return {
+        success: true,
+        address,
+      };
+    } catch (e) {
+      return GraphqlHelper.createGenericErrorResult(e);
+    }
+  }
+
+  @Query('userCart')
+  async userCart(@Args('input') input: IdInput): Promise<CartResult> {
+    try {
+      const cart = await this.usersService.getUserCart(input);
+
+      return {
+        success: true,
+        cart,
+      };
+    } catch (e) {
+      return GraphqlHelper.createGenericErrorResult(e);
+    }
+  }
+
+  @Mutation('deleteAddress')
+  async deleteAddress(@Args('input') input: IdInput): Promise<DefaultResult> {
+    try {
+      await this.usersService.deleteAddress(input);
+      return {
+        success: true,
+      };
+    } catch (e) {
+      return GraphqlHelper.createGenericErrorResult(e);
+    }
   }
 
   @Mutation('updateUser')

@@ -3,7 +3,7 @@ import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import {
   DefaultResult,
-  DeleteInput,
+  IdInput,
   GetListInput,
   GetProductBySlugInput,
   NewProductInput,
@@ -23,13 +23,13 @@ export class ProductResolver {
     @Args('input') input: GetListInput,
   ): Promise<ProductsResult> {
     try {
-      const { products, total_items } = await this.productService.getProducts(
+      const { items, total_items } = await this.productService.getProducts(
         input,
       );
 
       return {
         success: true,
-        products,
+        items,
         total_items,
       };
     } catch (e) {
@@ -42,26 +42,26 @@ export class ProductResolver {
     @Args('input') input: GetProductBySlugInput,
   ): Promise<any> {
     try {
-      const product = await this.productService.getProductBySlug(input);
+      const item = await this.productService.getProductBySlug(input);
 
       return {
         success: true,
-        product,
+        item,
       };
     } catch (e) {
       return GraphqlHelper.createGenericErrorResult(e);
     }
   }
 
-  @UseGuards(GqlAuthGuard)
-  @Mutation('deleteAllProducts')
-  async delete() {
-    const count = await this.productService.deleteAllProducts();
+  // @UseGuards(GqlAuthGuard)
+  // @Mutation('deleteAllProducts')
+  // async delete() {
+  //   const count = await this.productService.deleteAllProducts();
 
-    return {
-      count,
-    };
-  }
+  //   return {
+  //     count,
+  //   };
+  // }
 
   @UseGuards(GqlAuthGuard)
   @Mutation('createProduct')
@@ -69,11 +69,11 @@ export class ProductResolver {
     @Args('input') input: NewProductInput,
   ): Promise<ProductResult> {
     try {
-      const product = await this.productService.createProduct(input);
+      const item = await this.productService.createProduct(input);
 
       return {
         success: true,
-        product,
+        item,
       };
     } catch (e) {
       return GraphqlHelper.createGenericErrorResult(e);
@@ -82,9 +82,7 @@ export class ProductResolver {
 
   @UseGuards(GqlAuthGuard)
   @Mutation('deleteProduct')
-  async deleteProduct(
-    @Args('input') input: DeleteInput,
-  ): Promise<DefaultResult> {
+  async deleteProduct(@Args('input') input: IdInput): Promise<DefaultResult> {
     try {
       await this.productService.deleteProduct(input);
       return {
@@ -105,7 +103,7 @@ export class ProductResolver {
 
       return {
         success: true,
-        product,
+        item: product,
       };
     } catch (e) {
       return GraphqlHelper.createGenericErrorResult(e);

@@ -50,7 +50,6 @@ export class RolesResolver {
         success: true,
       };
     } catch (e) {
-      console.log(e);
       return GraphqlHelper.createGenericErrorResult(e);
     }
   }

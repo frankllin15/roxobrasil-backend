@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Args } from '@nestjs/graphql';
 import {
-  DeleteInput,
+  IdInput,
   GetProductBySlugInput,
   NewProductInput,
   UpdateProductInput,
@@ -26,7 +26,7 @@ export class ProductService {
 
     const slug = StringFormatHelper.createSlug(input.name, id);
 
-    const product = await this.prismaServise.product.create({
+    const item = await this.prismaServise.product.create({
       data: {
         id,
         slug,
@@ -43,14 +43,14 @@ export class ProductService {
       include: { price: true, variants: true },
     });
 
-    return product;
+    return item;
   }
 
   async getProducts(
     @Args('input') input,
-  ): Promise<{ products: any; total_items: number }> {
-    const products = await this.prismaServise.product.findMany({
-      take: input.take || 20,
+  ): Promise<{ items: any; total_items: number }> {
+    const items = await this.prismaServise.product.findMany({
+      take: input?.take || 20,
       include: {
         variants: { include: { assets: true } },
         price: true,
@@ -63,7 +63,7 @@ export class ProductService {
 
     return {
       total_items,
-      products,
+      items,
     };
   }
 
@@ -97,7 +97,7 @@ export class ProductService {
 
     return product;
   }
-  async deleteProduct(input: DeleteInput) {
+  async deleteProduct(input: IdInput) {
     await this.prismaServise.product.delete({ where: { id: input.id } });
   }
 

@@ -1,5 +1,10 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
-import { UpdateVariantsInput, VariantsResult } from 'src/graphql';
+import {
+  DeleteResult,
+  IdListInput,
+  UpdateVariantsInput,
+  VariantsResult,
+} from 'src/graphql';
 import { GraphqlHelper } from 'src/helpers/graphql.helper';
 import { VariantsService } from './variants.service';
 
@@ -17,6 +22,22 @@ export class VariantsResolver {
       return {
         success: true,
         variants,
+      };
+    } catch (e) {
+      return GraphqlHelper.createGenericErrorResult(e);
+    }
+  }
+
+  @Mutation('deleteVariants')
+  async deleteVariant(
+    @Args('input') input: IdListInput,
+  ): Promise<DeleteResult> {
+    try {
+      const { count } = await this.variantsService.deleteVariants(input);
+
+      return {
+        success: true,
+        count,
       };
     } catch (e) {
       return GraphqlHelper.createGenericErrorResult(e);

@@ -1,6 +1,14 @@
+scalar Date
+
 enum DiscounType {
   PERCENT
   VALUE
+}
+enum PaymentMethod {
+  credit
+  debit
+  payment_slip
+
 }
 
 type Role {
@@ -8,7 +16,7 @@ type Role {
   name: String
   description: String
   Users: [User]
-  created_at: String
+  created_at: Date
 }
 
 type Address {
@@ -18,10 +26,11 @@ type Address {
   default: Boolean!
   number: String!
   country: String!
+  district: String!
   state: String!
   code: String!
   user_id: String!
-  user: User! 
+  created_at: Date!
 }
 
 type User {
@@ -30,9 +39,38 @@ type User {
   lastName: String
   email: String!
   password: String!
-  roles: [Role]
+  phoneNumber: String
   address: [Address]
-  created_at: String!
+  payment_method: Payment
+  roles: [Role]
+  created_at: Date!
+
+}
+
+type Payment {
+  id: String!
+  user: User!
+  method: PaymentMethod
+  card_number: String
+  security_code: String
+  validate: Date
+}
+
+type Order {
+  id: String!
+  products: [Variant]
+  payment: Payment!
+  status: String!
+  delivery_address: Address!
+  created_at: Date
+
+}
+
+type Cart {
+  id: String!
+  products: [Product]
+  user_id: String!
+  created_at: Date
 }
 
 type Product {
@@ -44,7 +82,7 @@ type Product {
   price: Price
   collections: [Collection]
   discount: [Discount]
-  SKU: String
+  created_at: Date
 }
 
 type Variant {
@@ -54,6 +92,7 @@ type Variant {
   color: String
   info: String
   assets: [Assets]
+  SKU: String
   product: Product
   price: Float!
   quantity: Int!
@@ -73,8 +112,7 @@ type Assets {
   width: Int
   height: Int
   mime_type: String
-  variant_id: String!
-  variant: Variant!
+
 }
 
 type Collection {
@@ -84,7 +122,7 @@ type Collection {
   products: [Product]
   children: [Collection]
   parent: [Collection]
-  created_at: String
+  created_at: Date
 }
 
 type Discount {
@@ -94,8 +132,8 @@ type Discount {
   type: DiscounType!
   products: [Product]
   value: Float!
-  created_at: String!
-  expires: String!
+  created_at: Date!
+  expires: Date!
 }
 
 input NewUserInput {
@@ -104,6 +142,7 @@ input NewUserInput {
   email: String!
   password: String!
   address: NewAddress
+  phoneNumber: String
   roles: [String]!
 }
 
@@ -113,6 +152,7 @@ input NewAddress {
   number: String!
   default: Boolean
   country: String!
+  district: String!
   state: String!
   code: String!
 }
@@ -167,11 +207,14 @@ type DeleteResult {
 }
 
 type LoginResult {
+  success: Boolean
   access_token: String
   user: User
 }
 
 type CreateUserResult {
+  success: Boolean
+  errors: [Error]
   access_token: String
   user: User
 }
@@ -179,13 +222,13 @@ type CreateUserResult {
 type ProductResult {
   success: Boolean
   errors: [Error]
-  product: Product
+  item: Product
 }
 
 type ProductsResult {
   success: Boolean
   errors: [Error]
-  products: [Product]
+  items: [Product]
   total_items: Int
 }
 
@@ -193,7 +236,7 @@ type VariantsResult {
   success: Boolean
   errors: [Error]
   variants: [Variant]
-}
+} 
 
 type CollectionResult {
   success: Boolean
@@ -219,6 +262,23 @@ type DiscountsResult {
   errors: [Error]
   success: Boolean
   discounts: [Discount]
+}
+
+type AddressResult {
+  success: Boolean
+  errors: [Error]
+  address: [Address]
+}
+
+type CartResult {
+  errors: [Error]
+  success: Boolean
+  cart: Cart
+}
+type CartsResult {
+  errors: [Error]
+  success: Boolean
+  carts: [Cart]
 }
 
 input DeleteRoleInput {
@@ -294,10 +354,6 @@ input GetProductBySlugInput {
   slug: String!
 }
 
-input DeleteInput {
-  id: String!
-}
-
 input UpdateProductFieldsInput {
   name: String
   descrition: String
@@ -329,6 +385,11 @@ input IdInput {
   id: String
 }
 
+input IdListInput {
+  ids: [String]
+}
+
+
 input NewCollectionInput {
   name: String!
   description: String
@@ -342,7 +403,7 @@ input NewDiscountInput {
   type: DiscounType
   products: [IdInput]
   value: Float!
-  expires: String!
+  expires: Date!
 }
 
 input ProductDiscountInput {
@@ -350,14 +411,31 @@ input ProductDiscountInput {
   products: [IdInput]
 }
 
-type DeleteAllProductsResult {
- count: Int
+input NewCart {
+  products: [IdInput]
+  user_id: String!
+}
+
+input UpdateCartFields {
+  products: [IdInput]
+}
+input UpdateCartInput {
+  id: String!
+  data: UpdateCartFields!
+}
+
+type DeleteResult {
+  errors: [Error]
+  success: Boolean
+  count: Int
 }
 
 type Query {
   # User
-  users: UsersResult
-  user(input: UserInput): UserResult
+  users: UsersResult!
+  user(input: UserInput): UserResult!
+  userAddress(input: IdInput): AddressResult!
+  userCart(input: IdInput): CartResult!
   # Role
   roles: RolesResult 
   # Product
@@ -369,6 +447,9 @@ type Query {
   # Discount
   discount(input: IdInput): DiscountResult!
   discounts(input: GetListInput): DiscountsResult!
+  # Cart
+  cart(input: IdInput): CartResult!
+  carts: CartsResult!
 }
 
 type Mutation {
@@ -376,6 +457,8 @@ type Mutation {
   createUser(input: NewUserInput): CreateUserResult
   updateUser(input: UpdateUserInput): UserResult!
   deleteUser(input: DeleteUserInput): DeleteResult!
+  # Address
+  deleteAddress(input: IdInput): DefaultResult!
   # Role
   createRole(input: NewRole): CreateRoleResult!
   deleteRole(input: DeleteRoleInput): DeleteResult!
@@ -385,16 +468,20 @@ type Mutation {
   verify: User
   # Product
   createProduct(input: NewProductInput): ProductResult!
-  deleteProduct(input: DeleteInput): DefaultResult!
-  deleteAllProducts: DeleteAllProductsResult
+  deleteProduct(input: IdInput): DefaultResult!
   updateProduct(input: UpdateProductInput): ProductResult!
   # Variat
   updateVariants(input: UpdateVariantsInput): VariantsResult!
+  deleteVariants(input: IdListInput): DeleteResult!
   # Collections
-  createCollection(input: NewCollectionInput): CollectionResult!
-  deleteCollection(input: DeleteInput): DefaultResult!
-  # Discount
-  createDiscount(input: NewDiscountInput): DiscountResult!
+  createCollection(input: NewCollectionInput): DiscountResult!
   addProductsDiscount(input: ProductDiscountInput): DiscountResult!
   removeProductsDiscount(input: ProductDiscountInput): DiscountResult!
+  deleteCollection(input: IdInput): DefaultResult!
+  # Discount
+  createDiscount(input: NewDiscountInput): DiscountResult!
+  # Cart
+  createCart(input: NewCart): CartResult!
+  updateCart(input: UpdateCartInput): CartResult!
+  deleteCart(input: IdInput): DefaultResult!
 }
