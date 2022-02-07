@@ -48,35 +48,34 @@
 # COPY . .
 
 
-# FROM node:14 as builder
-
-# WORKDIR /usr/app
-
-# COPY package*.json ./
-# COPY tsconfig.build.json ./
-
-# RUN yarn install --network-timeout 100000
-
-# RUN yarn build
-# COPY . .
-
-
-
-FROM node:14
+FROM node:14 as builder
 
 WORKDIR /usr/app
 
 COPY package*.json ./
 COPY tsconfig.build.json ./
 
-# COPY --from=builder /usr/app ./
-COPY prisma/ ./prisma
-
-
 RUN yarn install --network-timeout 100000
+
 RUN yarn build
+COPY . .
+
+
+
+FROM node:14-alpine
+
+WORKDIR /usr/app
+
+COPY package*.json ./
+COPY tsconfig.build.json ./
 
 COPY . .
+COPY --from=builder /usr/app/prisma ./prisma
+COPY --from=builder /usr/app/dist ./dist
+
+RUN yarn install --prod --network-timeout 100000
+# RUN yarn build
+
 
 
 EXPOSE 3000
