@@ -131,6 +131,7 @@ model Cart {
   id String @id @default(cuid())
   products Variant[]
   user_id String
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade   )
   created_at DateTime @default(now())
 
 }
