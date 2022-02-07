@@ -44,7 +44,6 @@ type User {
   payment_method: Payment
   roles: [Role]
   created_at: Date!
-
 }
 
 type Payment {
@@ -68,7 +67,7 @@ type Order {
 
 type Cart {
   id: String!
-  products: [Product]
+  products: [Variant]
   user_id: String!
   created_at: Date
 }

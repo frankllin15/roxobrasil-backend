@@ -147,7 +147,7 @@ export class UsersService {
   public async getUserCart(input: IdInput): Promise<any> {
     return await this.prisma.cart.findFirst({
       where: { user_id: input.id },
-      include: { products: true },
+      include: { products: { include: { assets: true } } },
     });
   }
 }

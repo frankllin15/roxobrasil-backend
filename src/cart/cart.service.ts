@@ -8,10 +8,12 @@ export class CartService {
 
   public async createCart(input: NewCart): Promise<Cart> {
     const { user_id, products } = input;
+
     return await this.prisma.cart.create({
       data: {
-        user_id,
         products: { connect: products },
+        // user_id: user_id,
+        user: { connect: { id: user_id } },
       },
     });
   }

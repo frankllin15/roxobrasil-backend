@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:98033809@postgres:5432/roxobrasil&connect_timeout=15"
+  url      = env("DATABASE_URL")
 }
 
 model Role {
@@ -48,7 +48,7 @@ model User {
   address    Address[]
   payment_methods Payment[]
   created_at DateTime @default(now())
-
+  cart Cart?
 }
 
 model Assets {

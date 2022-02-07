@@ -4,15 +4,15 @@
 .dockerignore
 
 # Build dependencies
-dist
-# node_modules
+# dist
+node_modules
 coverage
 
 # Lock
 yarn.lock
 
 # Environment (contains sensitive data)
-# .env
+.env
 
 # Files not required for production
 .editorconfig

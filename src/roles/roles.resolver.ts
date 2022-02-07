@@ -1,6 +1,5 @@
 import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
-import * as moment from 'moment';
 import { AuthService } from 'src/auth/auth.service';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { AddRoleUserInput, NewRole } from 'src/graphql';
@@ -11,8 +10,8 @@ import { RolesEnum } from './roles.enum';
 import { RolesGuard } from './roles.guard';
 
 @Resolver('Roles')
-@UseGuards(RolesGuard)
-@UseGuards(GqlAuthGuard)
+// @UseGuards(RolesGuard)
+// @UseGuards(GqlAuthGuard)
 export class RolesResolver {
   constructor(
     private readonly prisma: PrismaService,
@@ -39,10 +38,8 @@ export class RolesResolver {
   async createRoles(@Args('input') args: NewRole) {
     try {
       const id = Math.floor(1000 + Math.random() * 9000).toString();
-      const date = moment().format('DD/MM/YYYY h:mm:ss');
-
       const role = await this.prisma.role.create({
-        data: { ...args, id, created_at: date },
+        data: { ...args, id },
       });
 
       return {

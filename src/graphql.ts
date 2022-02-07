@@ -232,7 +232,7 @@ export class Order {
 
 export class Cart {
     id: string;
-    products?: Nullable<Nullable<Product>[]>;
+    products?: Nullable<Nullable<Variant>[]>;
     user_id: string;
     created_at?: Nullable<Date>;
 }
