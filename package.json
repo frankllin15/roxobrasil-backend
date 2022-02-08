@@ -46,10 +46,10 @@
     "rxjs": "^7.2.0",
     "ts-morph": "^13.0.2",
     "uuid": "^8.3.2",
-    "prisma": "3.7.0"
+    "prisma": "3.7.0",
+    "@nestjs/cli": "^8.0.0"
   },
   "devDependencies": {
-    "@nestjs/cli": "^8.0.0",
     "@nestjs/schematics": "^8.0.0",
     "@nestjs/testing": "^8.0.0",
     "@types/bcryptjs": "^2.4.2",
