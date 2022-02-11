@@ -10,6 +10,12 @@ export class VariantsService {
     private readonly productService: ProductService,
   ) {}
 
+  async getVariants(input: IdListInput) {
+    return await this.prismaService.variant.findMany({
+      where: { id: { in: input.ids } },
+    });
+  }
+
   async updateVariats(input: UpdateVariantsInput) {
     const variants = await Promise.all(
       input.variants.map(async (variant) => {

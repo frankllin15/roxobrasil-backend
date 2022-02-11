@@ -374,7 +374,7 @@ export class ProductsResult {
 export class VariantsResult {
     success?: Nullable<boolean>;
     errors?: Nullable<Nullable<Error>[]>;
-    variants?: Nullable<Nullable<Variant>[]>;
+    items?: Nullable<Nullable<Variant>[]>;
 }
 
 export class CollectionResult {
@@ -433,6 +433,8 @@ export abstract class IQuery {
     abstract products(input?: Nullable<GetListInput>): ProductsResult | Promise<ProductsResult>;
 
     abstract getProductBySlug(input?: Nullable<GetProductBySlugInput>): ProductResult | Promise<ProductResult>;
+
+    abstract variants(input?: Nullable<IdListInput>): VariantsResult | Promise<VariantsResult>;
 
     abstract collections(input?: Nullable<GetListInput>): CollectionsResult | Promise<CollectionsResult>;
 

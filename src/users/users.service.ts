@@ -79,7 +79,7 @@ export class UsersService {
         id: uuid(),
         password: hashedPassword,
         roles: {
-          connect: roles.map((e) => ({ id: e })) || [],
+          connect: roles.map((e) => ({ name: e })) || [],
         },
         address:
           Object.keys(address || {}).length > 0

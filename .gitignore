@@ -2,6 +2,10 @@
 /dist
 /node_modules
 
+# development
+
+devcli
+
 # Logs
 logs
 *.log

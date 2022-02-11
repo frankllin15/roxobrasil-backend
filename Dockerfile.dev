@@ -1,0 +1,19 @@
+FROM node:16.13.0-alpine
+
+WORKDIR /usr/app
+
+COPY package*.json ./
+COPY tsconfig.build.json ./
+
+RUN yarn install --network-timeout 100000
+
+RUN yarn build
+COPY . .
+
+EXPOSE 3000
+
+CMD ["yarn", "start:dev"]
+
+
+
+
