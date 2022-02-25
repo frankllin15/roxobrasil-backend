@@ -76,7 +76,7 @@ type Product {
   id: String!
   name: String!
   slug: String!
-  descrition: String
+  description: String
   variants: [Variant]
   price: Price
   collections: [Collection]
@@ -323,7 +323,7 @@ input UpdateUserInput {
 
 input NewProductInput {
   name: String!
-  descrition: String
+  description: String
   variants: [NewVariantInput]
 
 }
@@ -355,7 +355,7 @@ input GetProductBySlugInput {
 
 input UpdateProductFieldsInput {
   name: String
-  descrition: String
+  description: String
   variants: [NewVariantInput]
   collections: [IdInput]
 }

@@ -118,7 +118,7 @@ model Discount {
 model Product {
   id String @id
   name String
-  descrition String?
+  description String?
   variants Variant[]
   discount Discount[]
   price Price?

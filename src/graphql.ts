@@ -80,7 +80,7 @@ export class UpdateUserInput {
 
 export class NewProductInput {
     name: string;
-    descrition?: Nullable<string>;
+    description?: Nullable<string>;
     variants?: Nullable<Nullable<NewVariantInput>[]>;
 }
 
@@ -109,7 +109,7 @@ export class GetProductBySlugInput {
 
 export class UpdateProductFieldsInput {
     name?: Nullable<string>;
-    descrition?: Nullable<string>;
+    description?: Nullable<string>;
     variants?: Nullable<Nullable<NewVariantInput>[]>;
     collections?: Nullable<Nullable<IdInput>[]>;
 }
@@ -241,7 +241,7 @@ export class Product {
     id: string;
     name: string;
     slug: string;
-    descrition?: Nullable<string>;
+    description?: Nullable<string>;
     variants?: Nullable<Nullable<Variant>[]>;
     price?: Nullable<Price>;
     collections?: Nullable<Nullable<Collection>[]>;
