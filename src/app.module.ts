@@ -11,7 +11,7 @@ import { DiscountModule } from './discount/discount.module';
 // import { GraphQLDate } from 'graphql-iso-date';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
-import { UploadModule } from './upload/upload.module';
+// import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -31,7 +31,7 @@ import { UploadModule } from './upload/upload.module';
     DiscountModule,
     CartModule,
     OrderModule,
-    UploadModule,
+    // UploadModule,
   ],
   controllers: [AppController],
   providers: [],
