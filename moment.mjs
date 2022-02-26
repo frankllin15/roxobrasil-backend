@@ -1,5 +1,1 @@
-const address = {
-  // number: 12,
-};
-
-console.log(Boolean(address));
+console.log(process.cwd());

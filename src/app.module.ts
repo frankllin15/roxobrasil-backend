@@ -12,6 +12,7 @@ import { DiscountModule } from './discount/discount.module';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
 // import { UploadModule } from './upload/upload.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { OrderModule } from './order/order.module';
     DiscountModule,
     CartModule,
     OrderModule,
+    UploadModule,
     // UploadModule,
   ],
   controllers: [AppController],
