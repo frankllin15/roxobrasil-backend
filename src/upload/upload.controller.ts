@@ -1,23 +1,44 @@
-import { Controller, Get, Post, Res, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
-import sharp from 'sharp';
+import * as sharp from 'sharp';
 import { Readable } from 'stream';
+import { UploadService } from './upload.service';
 
 @Controller('upload')
 export class UploadController {
+  constructor(private readonly uploadService: UploadService) {}
+
   @Post('/')
+  @UseInterceptors(FileInterceptor('file'))
   async uploadInput(
     @UploadedFile() file: Express.Multer.File,
     @Res() res: Response,
   ) {
-    // console.log(file.filename);
-    const out = await sharp(file.buffer).webp().toBuffer();
-    res.set({
-      'Content-Type': file.mimetype,
-    });
-    const stream = Readable.from(out);
+    try {
+      const out = await this.uploadService.uploadFile(file);
 
-    stream.pipe(res);
+      console.log(out);
+      res.set({
+        'Content-Type': 'application/json',
+        // 'Content-Disposition': 'attachment',
+      });
+
+      res.json(out);
+    } catch (e) {
+      return {
+        error: {
+          message: e.message,
+        },
+      };
+    }
   }
 
   @Get('/')

@@ -11,7 +11,7 @@ import { DiscountModule } from './discount/discount.module';
 // import { GraphQLDate } from 'graphql-iso-date';
 import { CartModule } from './cart/cart.module';
 import { OrderModule } from './order/order.module';
-// import { UploadModule } from './upload/upload.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -19,10 +19,9 @@ import { OrderModule } from './order/order.module';
     GraphQLModule.forRoot({
       playground: true,
       typePaths: ['./**/*.graphql'],
-      // resolvers: { Date: GraphQLDate },
       context: ({ req }) => ({ req }),
-      // plugins: [ApolloServerPluginLandingPageLocalDefault()],
     }),
+
     RolesModule,
     AuthModule,
     ProductModule,
@@ -31,7 +30,7 @@ import { OrderModule } from './order/order.module';
     DiscountModule,
     CartModule,
     OrderModule,
-    // UploadModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [],
