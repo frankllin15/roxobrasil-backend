@@ -57,6 +57,7 @@ model Assets {
   source String
   width Int?
   height Int?
+  base64Url String?
   variant_id String
   variant Variant @relation(fields: [variant_id], references: [id], onDelete: Cascade)
   mime_type String?

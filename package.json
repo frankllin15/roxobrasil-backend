@@ -36,6 +36,7 @@
     "@prisma/client": "3.7.0",
     "apollo-server-express": "^3.6.0",
     "bcryptjs": "^2.4.3",
+    "file-type": "^17.1.1",
     "graphql": "^15",
     "graphql-parse-resolve-info": "^4.12.0",
     "moment": "^2.29.1",
@@ -95,6 +96,7 @@
     "collectCoverageFrom": [
       "**/*.(t|j)s"
     ],
+    "type": "module",
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }

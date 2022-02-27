@@ -111,7 +111,7 @@ type Assets {
   width: Int
   height: Int
   mime_type: String
-
+  base64Url: String
 }
 
 type Collection {
@@ -278,6 +278,12 @@ type CartsResult {
   errors: [Error]
   success: Boolean
   carts: [Cart]
+}
+
+type AssetsResult {
+  errors: [Error]
+  success: Boolean
+  items: [Assets]
 }
 
 input DeleteRoleInput {
@@ -451,6 +457,8 @@ type Query {
   # Cart
   cart(input: IdInput): CartResult!
   carts: CartsResult!
+  # Assets
+  assets(input: GetListInput): AssetsResult!
 }
 
 type Mutation {

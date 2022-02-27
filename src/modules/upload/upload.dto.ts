@@ -3,11 +3,12 @@ export interface UploadPayload {
   width: number;
   height: number;
   base64Url: string;
+  mime_type: string;
 }
 
 export interface ImageInfo {
   filename: string;
   width: number;
   height: number;
-  mimetype: string;
+  mime_type: string;
 }

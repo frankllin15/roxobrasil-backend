@@ -21,6 +21,7 @@ export class UploadService {
       base64Url: await base64Blur,
       height: formatedImage.height,
       width: formatedImage.width,
+      mime_type: formatedImage.mime_type,
     };
   }
 
@@ -41,7 +42,7 @@ export class UploadService {
     return {
       width,
       height,
-      mimetype: `image/${format}`,
+      mime_type: `image/${format}`,
       filename,
     };
   }

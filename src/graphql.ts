@@ -276,6 +276,7 @@ export class Assets {
     width?: Nullable<number>;
     height?: Nullable<number>;
     mime_type?: Nullable<string>;
+    base64Url?: Nullable<string>;
 }
 
 export class Collection {
@@ -419,6 +420,12 @@ export class CartsResult {
     carts?: Nullable<Nullable<Cart>[]>;
 }
 
+export class AssetsResult {
+    errors?: Nullable<Nullable<Error>[]>;
+    success?: Nullable<boolean>;
+    items?: Nullable<Nullable<Assets>[]>;
+}
+
 export abstract class IQuery {
     abstract users(): UsersResult | Promise<UsersResult>;
 
@@ -447,6 +454,8 @@ export abstract class IQuery {
     abstract cart(input?: Nullable<IdInput>): CartResult | Promise<CartResult>;
 
     abstract carts(): CartsResult | Promise<CartsResult>;
+
+    abstract assets(input?: Nullable<GetListInput>): AssetsResult | Promise<AssetsResult>;
 }
 
 export abstract class IMutation {

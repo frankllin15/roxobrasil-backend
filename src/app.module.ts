@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { UsersModule } from './users/users.module';
-import { RolesModule } from './roles/roles.module';
-import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { AppController } from './app.controller';
-import { ProductModule } from './product/product.module';
-import { VariantsModule } from './variants/variants.module';
-import { CollectionsModule } from './collections/collections.module';
-import { DiscountModule } from './discount/discount.module';
-// import { GraphQLDate } from 'graphql-iso-date';
-import { CartModule } from './cart/cart.module';
-import { OrderModule } from './order/order.module';
-import { UploadModule } from './upload/upload.module';
+import { ProductModule } from './modules/product/product.module';
+import { VariantsModule } from './modules/variants/variants.module';
+import { CollectionsModule } from './modules/collections/collections.module';
+import { DiscountModule } from './modules/discount/discount.module';
+import { CartModule } from './modules/cart/cart.module';
+import { OrderModule } from './modules/order/order.module';
+import { UploadModule } from './modules/upload/upload.module';
+import { StorageModule } from './modules/storage/storage.module';
+import { AssetsModule } from './modules/assets/assets.module';
 
 @Module({
   imports: [
@@ -31,6 +32,8 @@ import { UploadModule } from './upload/upload.module';
     CartModule,
     OrderModule,
     UploadModule,
+    StorageModule,
+    AssetsModule,
   ],
   controllers: [AppController],
   providers: [],
