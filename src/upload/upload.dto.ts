@@ -1,10 +1,13 @@
 export interface UploadPayload {
-  source: string[];
+  source: string;
+  width: number;
+  height: number;
+  base64Url: string;
 }
 
-export interface BufferWithInfo {
-  buffer: Buffer;
-  info: {
-    filename: string;
-  };
+export interface ImageInfo {
+  filename: string;
+  width: number;
+  height: number;
+  mimetype: string;
 }

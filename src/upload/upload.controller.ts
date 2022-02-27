@@ -8,8 +8,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
-import * as sharp from 'sharp';
-import { Readable } from 'stream';
+
 import { UploadService } from './upload.service';
 
 @Controller('upload')

@@ -1,47 +1,72 @@
 import { Injectable } from '@nestjs/common';
 import * as sharp from 'sharp';
-import { BufferWithInfo, UploadPayload } from './upload.dto';
+import { ImageInfo, UploadPayload } from './upload.dto';
 import { v4 as uuid } from 'uuid';
-import { createWriteStream } from 'fs';
 import { join } from 'path';
 
 @Injectable()
 export class UploadService {
   public async uploadFile(file: Express.Multer.File): Promise<UploadPayload> {
-    const formatedImage = await Promise.all([
-      this.convertFile(file.buffer, 'webp', { width: 720 }),
-      this.convertFile(file.buffer, 'webp', { width: 240 }),
-    ]);
-
-    formatedImage.map((e) => {
-      e.info.filename = `${uuid()}-w=${e.info.width}.webp`;
+    const base64Blur = this.toBase64Blur(file, { width: 64 });
+    const formatedImage = await this.processImage(file, 'webp', {
+      width: 240,
     });
 
-    this.saveFiles(formatedImage);
+    const STORAGE_URI =
+      process.env.STORAGE_URI ||
+      `http://localhost:${process.env.PORT || 3000}/storage`;
 
-    return { source: formatedImage.map((e) => e.info.filename) };
-  }
-
-  private async convertFile(
-    file: Buffer,
-    filetype: keyof sharp.FormatEnum,
-    resize: { width: number },
-  ) {
-    const buffer = await sharp(file)
-      .toFormat(filetype)
-      .resize(resize)
-      .toBuffer();
     return {
-      buffer,
-      info: { width: resize.width, filename: '' },
+      source: `${STORAGE_URI}/${formatedImage.filename}`,
+      base64Url: await base64Blur,
+      height: formatedImage.height,
+      width: formatedImage.width,
     };
   }
 
-  private saveFiles(files: BufferWithInfo[]) {
-    files.map((file) => {
-      createWriteStream(
-        join(process.cwd(), 'storage', file.info.filename),
-      ).write(file.buffer);
-    });
+  // Converte, redidimenciona e salva a imagem
+  private async processImage(
+    file: Express.Multer.File,
+    filetype: keyof sharp.FormatEnum,
+    resize: { width: number },
+  ): Promise<ImageInfo> {
+    const filename = `${uuid()}-w=${resize.width}.webp`;
+
+    const { width, height, format } = await sharp(file.buffer)
+      .toFormat(filetype)
+      .resize(resize)
+      .withMetadata()
+      .toFile(join(process.cwd(), 'storage', filename));
+
+    return {
+      width,
+      height,
+      mimetype: `image/${format}`,
+      filename,
+    };
   }
+
+  private async toBase64Blur(
+    file: Express.Multer.File,
+    resize: { width: number },
+  ) {
+    const base64 = await sharp(file.buffer).resize(resize).blur(12).toBuffer();
+    // .toString();
+
+    return `data:${file.mimetype};base64,${base64.toString('base64')}`;
+  }
+
+  // private saveFiles(files: BufferWithInfo[]) {
+  //   files.map((file) => {
+  //     createWriteStream(
+  //       join(process.cwd(), 'storage', file.info.filename),
+  //     ).write(file.buffer);
+  //   });
+  // }
+
+  // private saveFile(file: BufferWithInfo) {
+  //   createWriteStream(join(process.cwd(), 'storage', file.info.filename)).write(
+  //     file.buffer,
+  //   );
+  // }
 }
