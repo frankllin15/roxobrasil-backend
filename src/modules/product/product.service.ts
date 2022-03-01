@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Args } from '@nestjs/graphql';
 import {
   IdInput,
@@ -10,10 +10,15 @@ import { MathHelper } from 'src/helpers/math.helper';
 import { StringFormatHelper } from 'src/helpers/stringFormat.helper';
 import { PrismaService } from 'src/prisma.service';
 import { v4 as uuid } from 'uuid';
+import { VariantsService } from '../variants/variants.service';
 
 @Injectable()
 export class ProductService {
-  constructor(private readonly prismaServise: PrismaService) {}
+  constructor(
+    private readonly prismaServise: PrismaService,
+    // @Inject(forwardRef(() => VariantsService))
+    private readonly variantsService: VariantsService,
+  ) {}
 
   public async createProduct(input: NewProductInput): Promise<any> {
     const { variants, ...data } = input;
@@ -26,19 +31,30 @@ export class ProductService {
 
     const slug = StringFormatHelper.createSlug(input.name, id);
 
+    const createdVariants = await Promise.all(
+      variants.map((variant) => {
+        return this.variantsService.createVariant(variant);
+      }),
+    );
+
     const item = await this.prismaServise.product.create({
       data: {
         id,
         slug,
         ...data,
         price: { create: { max: max, min: min } },
-        variants: {
-          create: variants.map(({ assets, ...variantData }) => ({
-            id: uuid(),
-            ...variantData,
-            assets: { create: assets },
-          })),
-        },
+        variants: { connect: createdVariants },
+        // variants: {
+        //   createMany: {data: variants.map(({ assets, ...variant }) => ({
+
+        //   }))
+        // },
+        // },
+        //  variants.map(({ assets, ...variantData }) => ({
+        //   id: uuid(),
+        //   ...variantData,
+        // })),
+        // },
       },
       include: { price: true, variants: true },
     });

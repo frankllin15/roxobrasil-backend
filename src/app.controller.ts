@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { AuthService } from './auth/auth.service';
+import { AuthService } from './modules/auth/auth.service';
 
 @Controller()
 export class AppController {

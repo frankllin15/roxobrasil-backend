@@ -1,14 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { IdListInput, UpdateVariantsInput } from 'src/graphql';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { IdListInput, NewVariantInput, UpdateVariantsInput } from 'src/graphql';
 import { PrismaService } from 'src/prisma.service';
-import { ProductService } from 'src/product/product.service';
+import { ProductService } from 'src/modules/product/product.service';
 
 @Injectable()
 export class VariantsService {
   constructor(
     private readonly prismaService: PrismaService,
+    @Inject(forwardRef(() => ProductService))
     private readonly productService: ProductService,
   ) {}
+
+  async createVariant(input: NewVariantInput) {
+    const { assets, ...data } = input;
+
+    return await this.prismaService.variant.create({
+      data: {
+        ...data,
+        assets: { connect: assets },
+      },
+      // select: { id: true },
+    });
+  }
 
   async getVariants(input: IdListInput) {
     return await this.prismaService.variant.findMany({

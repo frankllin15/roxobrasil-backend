@@ -106,7 +106,7 @@ type Price {
 }
 
 type Assets {
-  id: Int!
+  id: String!
   source: String!
   width: Int
   height: Int
@@ -280,10 +280,16 @@ type CartsResult {
   carts: [Cart]
 }
 
-type AssetsResult {
+type ListAssetsResult {
   errors: [Error]
   success: Boolean
   items: [Assets]
+}
+
+type AssetsResult {
+  errors: [Error]
+  success: Boolean
+  item: Assets
 }
 
 input DeleteRoleInput {
@@ -337,7 +343,7 @@ input NewProductInput {
 
 input NewVariantInput {
   name: String!
-  assets: [NewAssetsInput]
+  assets: [IdInput]
   price: Float!
   quantity: Int!
   size: String
@@ -348,7 +354,8 @@ input NewAssetsInput {
   source: String!
   width: Int
   height: Int
-  
+  base64Url: String
+  mime_type: String
 }
 
 input GetListInput {
@@ -388,6 +395,10 @@ input UpdateVariantsInput {
 
 input IdInput {
   id: String
+}
+
+input IntIdInput {
+  id: Int
 }
 
 input IdListInput {
@@ -458,7 +469,7 @@ type Query {
   cart(input: IdInput): CartResult!
   carts: CartsResult!
   # Assets
-  assets(input: GetListInput): AssetsResult!
+  assets(input: GetListInput): ListAssetsResult!
 }
 
 type Mutation {
@@ -493,4 +504,6 @@ type Mutation {
   createCart(input: NewCart): CartResult!
   updateCart(input: UpdateCartInput): CartResult!
   deleteCart(input: IdInput): DefaultResult!
+  # Assets
+  createAssets(input: NewAssetsInput): AssetsResult!
 }

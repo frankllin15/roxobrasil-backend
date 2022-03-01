@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
-import { ProductModule } from 'src/product/product.module';
+import { ProductModule } from 'src/modules/product/product.module';
 import { VariantsResolver } from './variants.resolver';
 import { VariantsService } from './variants.service';
 
 @Module({
   providers: [VariantsResolver, VariantsService, PrismaService],
-  imports: [ProductModule],
+  exports: [VariantsService],
+  imports: [forwardRef(() => ProductModule)],
 })
 export class VariantsModule {}

@@ -86,7 +86,7 @@ export class NewProductInput {
 
 export class NewVariantInput {
     name: string;
-    assets?: Nullable<Nullable<NewAssetsInput>[]>;
+    assets?: Nullable<Nullable<IdInput>[]>;
     price: number;
     quantity: number;
     size?: Nullable<string>;
@@ -97,6 +97,8 @@ export class NewAssetsInput {
     source: string;
     width?: Nullable<number>;
     height?: Nullable<number>;
+    base64Url?: Nullable<string>;
+    mime_type?: Nullable<string>;
 }
 
 export class GetListInput {
@@ -136,6 +138,10 @@ export class UpdateVariantsInput {
 
 export class IdInput {
     id?: Nullable<string>;
+}
+
+export class IntIdInput {
+    id?: Nullable<number>;
 }
 
 export class IdListInput {
@@ -271,7 +277,7 @@ export class Price {
 }
 
 export class Assets {
-    id: number;
+    id: string;
     source: string;
     width?: Nullable<number>;
     height?: Nullable<number>;
@@ -420,10 +426,16 @@ export class CartsResult {
     carts?: Nullable<Nullable<Cart>[]>;
 }
 
-export class AssetsResult {
+export class ListAssetsResult {
     errors?: Nullable<Nullable<Error>[]>;
     success?: Nullable<boolean>;
     items?: Nullable<Nullable<Assets>[]>;
+}
+
+export class AssetsResult {
+    errors?: Nullable<Nullable<Error>[]>;
+    success?: Nullable<boolean>;
+    item?: Nullable<Assets>;
 }
 
 export abstract class IQuery {
@@ -455,7 +467,7 @@ export abstract class IQuery {
 
     abstract carts(): CartsResult | Promise<CartsResult>;
 
-    abstract assets(input?: Nullable<GetListInput>): AssetsResult | Promise<AssetsResult>;
+    abstract assets(input?: Nullable<GetListInput>): ListAssetsResult | Promise<ListAssetsResult>;
 }
 
 export abstract class IMutation {
@@ -502,6 +514,8 @@ export abstract class IMutation {
     abstract updateCart(input?: Nullable<UpdateCartInput>): CartResult | Promise<CartResult>;
 
     abstract deleteCart(input?: Nullable<IdInput>): DefaultResult | Promise<DefaultResult>;
+
+    abstract createAssets(input?: Nullable<NewAssetsInput>): AssetsResult | Promise<AssetsResult>;
 }
 
 type Nullable<T> = T | null;

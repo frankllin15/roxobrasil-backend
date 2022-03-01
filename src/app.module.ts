@@ -36,6 +36,5 @@ import { AssetsModule } from './modules/assets/assets.module';
     AssetsModule,
   ],
   controllers: [AppController],
-  providers: [],
 })
 export class AppModule {}

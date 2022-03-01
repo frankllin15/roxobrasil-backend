@@ -8,12 +8,16 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
+import { AssetsService } from '../assets/assets.service';
 
 import { UploadService } from './upload.service';
 
 @Controller('upload')
 export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
+  constructor(
+    private readonly uploadService: UploadService,
+    private readonly assetsService: AssetsService,
+  ) {}
 
   @Post('/')
   @UseInterceptors(FileInterceptor('file'))
@@ -22,21 +26,23 @@ export class UploadController {
     @Res() res: Response,
   ) {
     try {
-      const out = await this.uploadService.uploadFile(file);
+      const payload = await this.uploadService.uploadFile(file);
 
-      console.log(out);
+      const assets = await this.assetsService.createAssets(payload);
       res.set({
         'Content-Type': 'application/json',
         // 'Content-Disposition': 'attachment',
       });
 
-      res.json(out);
+      res.json(assets);
     } catch (e) {
-      return {
+      res.status(400);
+
+      res.json({
         error: {
           message: e.message,
         },
-      };
+      });
     }
   }
 

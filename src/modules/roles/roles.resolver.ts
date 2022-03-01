@@ -1,7 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
-import { AuthService } from 'src/auth/auth.service';
-import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
+import { AuthService } from 'src/modules/auth/auth.service';
+import { GqlAuthGuard } from 'src/modules/auth/guards/gql-auth.guard';
 import { AddRoleUserInput, NewRole } from 'src/graphql';
 import { GraphqlHelper } from 'src/helpers/graphql.helper';
 import { PrismaService } from 'src/prisma.service';

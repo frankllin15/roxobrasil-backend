@@ -1,6 +1,6 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
+import { GqlAuthGuard } from 'src/modules/auth/guards/gql-auth.guard';
 import { UsersService } from './users.service';
 import {
   DeleteUserInput,
@@ -12,9 +12,9 @@ import {
   DefaultResult,
   CartResult,
 } from 'src/graphql';
-import { RolesGuard } from 'src/roles/roles.guard';
-import { Roles } from 'src/roles/roles.decorator';
-import { RolesEnum } from 'src/roles/roles.enum';
+import { RolesGuard } from 'src/modules/roles/roles.guard';
+import { Roles } from 'src/modules/roles/roles.decorator';
+import { RolesEnum } from 'src/modules/roles/roles.enum';
 import { GraphqlHelper } from 'src/helpers/graphql.helper';
 
 @UseGuards(RolesGuard)

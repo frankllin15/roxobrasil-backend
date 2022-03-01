@@ -53,19 +53,21 @@ model User {
 }
 
 model Assets {
-  id Int @id @default(autoincrement())
+  id String @id @default(cuid())
   source String
   width Int?
   height Int?
   base64Url String?
-  variant_id String
-  variant Variant @relation(fields: [variant_id], references: [id], onDelete: Cascade)
+  // variant_id String?
+  // variant Variant? @relation(fields: [variant_id], references: [id], onDelete: Cascade)
+  variant Variant[]
   mime_type String?
+  created_at DateTime @default(now())
 }
 
 
 model Variant {
-  id String @id
+  id String @id @default(uuid())
   name String
   size String?
   color String?
@@ -73,7 +75,7 @@ model Variant {
   info String?
   assets Assets[]
   product_id String
-  product Product @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  product Product? @relation(fields: [product_id], references: [id], onDelete: Cascade)
   price Float
   quantity Int
   in_stock Boolean?

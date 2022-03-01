@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AuthHelper } from 'src/auth/auth.helper';
+import { AuthHelper } from 'src/modules/auth/auth.helper';
 import {
   DeleteUserInput,
   IdInput,
