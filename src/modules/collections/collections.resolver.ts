@@ -19,11 +19,11 @@ export class CollectionsResolver {
     @Args('input') input: GetListInput,
   ): Promise<CollectionsResult> {
     try {
-      const collections = await this.collectionsService.getCollections(input);
+      const items = await this.collectionsService.getCollections(input);
 
       return {
         success: true,
-        collections,
+        items,
       };
     } catch (e) {
       return GraphqlHelper.createGenericErrorResult(e);
@@ -32,11 +32,11 @@ export class CollectionsResolver {
   @Query('collection')
   async collection(@Args('input') input: IdInput): Promise<CollectionResult> {
     try {
-      const collection = await this.collectionsService.getCollection(input);
+      const item = await this.collectionsService.getCollection(input);
 
       return {
         success: true,
-        collection,
+        item,
       };
     } catch (e) {
       return GraphqlHelper.createGenericErrorResult(e);
@@ -48,11 +48,11 @@ export class CollectionsResolver {
     @Args('input') input: NewCollectionInput,
   ): Promise<CollectionResult> {
     try {
-      const collection = await this.collectionsService.createCollection(input);
+      const item = await this.collectionsService.createCollection(input);
 
       return {
         success: true,
-        collection,
+        item,
       };
     } catch (e) {
       return GraphqlHelper.createGenericErrorResult(e);

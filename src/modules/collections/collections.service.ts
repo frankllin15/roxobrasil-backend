@@ -6,7 +6,6 @@ import {
   NewCollectionInput,
 } from 'src/graphql';
 import { PrismaService } from 'src/prisma.service';
-import { dateNow } from 'src/helpers/moment.helper';
 
 @Injectable()
 export class CollectionsService {
@@ -19,7 +18,6 @@ export class CollectionsService {
         ...data,
         children: { connect: children || [] },
         parent: { connect: parent || [] },
-        created_at: dateNow(),
       },
     });
   }

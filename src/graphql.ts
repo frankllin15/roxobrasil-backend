@@ -82,6 +82,7 @@ export class NewProductInput {
     name: string;
     description?: Nullable<string>;
     variants?: Nullable<Nullable<NewVariantInput>[]>;
+    collections?: Nullable<Nullable<IdInput>[]>;
 }
 
 export class NewVariantInput {
@@ -387,13 +388,13 @@ export class VariantsResult {
 export class CollectionResult {
     success?: Nullable<boolean>;
     errors?: Nullable<Nullable<Error>[]>;
-    collection?: Nullable<Collection>;
+    item?: Nullable<Collection>;
 }
 
 export class CollectionsResult {
     success?: Nullable<boolean>;
     errors?: Nullable<Nullable<Error>[]>;
-    collections?: Nullable<Nullable<Collection>[]>;
+    items?: Nullable<Nullable<Collection>[]>;
 }
 
 export class DiscountResult {
@@ -499,15 +500,15 @@ export abstract class IMutation {
 
     abstract deleteVariants(input?: Nullable<IdListInput>): DeleteResult | Promise<DeleteResult>;
 
-    abstract createCollection(input?: Nullable<NewCollectionInput>): DiscountResult | Promise<DiscountResult>;
-
-    abstract addProductsDiscount(input?: Nullable<ProductDiscountInput>): DiscountResult | Promise<DiscountResult>;
-
-    abstract removeProductsDiscount(input?: Nullable<ProductDiscountInput>): DiscountResult | Promise<DiscountResult>;
+    abstract createCollection(input?: Nullable<NewCollectionInput>): CollectionResult | Promise<CollectionResult>;
 
     abstract deleteCollection(input?: Nullable<IdInput>): DefaultResult | Promise<DefaultResult>;
 
     abstract createDiscount(input?: Nullable<NewDiscountInput>): DiscountResult | Promise<DiscountResult>;
+
+    abstract addProductsDiscount(input?: Nullable<ProductDiscountInput>): DiscountResult | Promise<DiscountResult>;
+
+    abstract removeProductsDiscount(input?: Nullable<ProductDiscountInput>): DiscountResult | Promise<DiscountResult>;
 
     abstract createCart(input?: Nullable<NewCart>): CartResult | Promise<CartResult>;
 

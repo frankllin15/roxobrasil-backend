@@ -6,23 +6,29 @@ import { join } from 'path';
 
 @Injectable()
 export class UploadService {
-  public async uploadFile(file: Express.Multer.File): Promise<UploadPayload> {
-    const base64Blur = this.toBase64Blur(file, { width: 64 });
-    const formatedImage = await this.processImage(file, 'webp', {
-      width: 240,
-    });
+  public async uploadFile(
+    file: Express.Multer.File,
+  ): Promise<UploadPayload | Error> {
+    try {
+      const base64Blur = await this.toBase64Blur(file, { width: 64 });
+      const formatedImage = await this.processImage(file, 'webp', {
+        width: 240,
+      });
 
-    const STORAGE_URI =
-      process.env.STORAGE_URI ||
-      `http://localhost:${process.env.PORT || 3000}/storage`;
+      const STORAGE_URI =
+        process.env.STORAGE_URI ||
+        `http://localhost:${process.env.PORT || 3000}/storage`;
 
-    return {
-      source: `${STORAGE_URI}/${formatedImage.filename}`,
-      base64Url: await base64Blur,
-      height: formatedImage.height,
-      width: formatedImage.width,
-      mime_type: formatedImage.mime_type,
-    };
+      return {
+        source: `${STORAGE_URI}/${formatedImage.filename}`,
+        base64Url: base64Blur,
+        height: formatedImage.height,
+        width: formatedImage.width,
+        mime_type: formatedImage.mime_type,
+      };
+    } catch (e) {
+      return new Error(e.message);
+    }
   }
 
   // Converte, redidimenciona e salva a imagem

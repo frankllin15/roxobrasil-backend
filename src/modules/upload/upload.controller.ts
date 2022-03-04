@@ -27,18 +27,19 @@ export class UploadController {
   ) {
     try {
       const payload = await this.uploadService.uploadFile(file);
+      if (payload instanceof Error) throw new Error(payload.message);
 
       const assets = await this.assetsService.createAssets(payload);
       res.set({
         'Content-Type': 'application/json',
-        // 'Content-Disposition': 'attachment',
       });
 
-      res.json(assets);
+      return res.json(assets);
     } catch (e) {
-      res.status(400);
+      console.log('Caiu no catch');
+      res.status(300);
 
-      res.json({
+      return res.json({
         error: {
           message: e.message,
         },

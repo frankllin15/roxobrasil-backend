@@ -240,14 +240,14 @@ type VariantsResult {
 type CollectionResult {
   success: Boolean
   errors: [Error]
-  collection: Collection
+  item: Collection
 }
 
 
 type CollectionsResult {
   success: Boolean
   errors: [Error]
-  collections: [Collection]
+  items: [Collection]
 }
 
 type DiscountResult {
@@ -337,7 +337,7 @@ input NewProductInput {
   name: String!
   description: String
   variants: [NewVariantInput]
-
+  collections: [IdInput]
 }
 
 
@@ -494,12 +494,12 @@ type Mutation {
   updateVariants(input: UpdateVariantsInput): VariantsResult!
   deleteVariants(input: IdListInput): DeleteResult!
   # Collections
-  createCollection(input: NewCollectionInput): DiscountResult!
-  addProductsDiscount(input: ProductDiscountInput): DiscountResult!
-  removeProductsDiscount(input: ProductDiscountInput): DiscountResult!
+  createCollection(input: NewCollectionInput): CollectionResult!
   deleteCollection(input: IdInput): DefaultResult!
   # Discount
   createDiscount(input: NewDiscountInput): DiscountResult!
+  addProductsDiscount(input: ProductDiscountInput): DiscountResult!
+  removeProductsDiscount(input: ProductDiscountInput): DiscountResult!
   # Cart
   createCart(input: NewCart): CartResult!
   updateCart(input: UpdateCartInput): CartResult!

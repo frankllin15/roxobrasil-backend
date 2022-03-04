@@ -1,5 +1,6 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Args } from '@nestjs/graphql';
+import { PrismaClient } from '@prisma/client';
 import {
   IdInput,
   GetProductBySlugInput,
@@ -21,7 +22,7 @@ export class ProductService {
   ) {}
 
   public async createProduct(input: NewProductInput): Promise<any> {
-    const { variants, ...data } = input;
+    const { variants, collections, ...data } = input;
 
     const variantsPrice = variants.map((e) => e.price);
 
@@ -31,33 +32,35 @@ export class ProductService {
 
     const slug = StringFormatHelper.createSlug(input.name, id);
 
-    const createdVariants = await Promise.all(
-      variants.map((variant) => {
-        return this.variantsService.createVariant(variant);
-      }),
-    );
+    const item = await this.prismaServise.$transaction(
+      async (prisma: PrismaClient) => {
+        const createdVariants = await Promise.all(
+          variants.map(async (variant) => {
+            const { assets, ...data } = variant;
+            return await prisma.variant.create({
+              data: {
+                ...data,
+                assets: { connect: assets },
+              },
+            });
+          }),
+        );
 
-    const item = await this.prismaServise.product.create({
-      data: {
-        id,
-        slug,
-        ...data,
-        price: { create: { max: max, min: min } },
-        variants: { connect: createdVariants },
-        // variants: {
-        //   createMany: {data: variants.map(({ assets, ...variant }) => ({
-
-        //   }))
-        // },
-        // },
-        //  variants.map(({ assets, ...variantData }) => ({
-        //   id: uuid(),
-        //   ...variantData,
-        // })),
-        // },
+        return await prisma.product.create({
+          data: {
+            id,
+            slug,
+            ...data,
+            price: { create: { max: max, min: min } },
+            variants: {
+              connect: createdVariants.map((variant) => ({ id: variant.id })),
+            },
+            collections: { connect: collections },
+          },
+          include: { price: true, variants: true },
+        });
       },
-      include: { price: true, variants: true },
-    });
+    );
 
     return item;
   }
@@ -99,7 +102,7 @@ export class ProductService {
         collections: { connect: collections },
         ...data,
         variants: {
-          create: variants.map(({ assets, ...variatsData }) => ({
+          create: variants?.map(({ assets, ...variatsData }) => ({
             id: uuid(),
             ...variatsData,
             assets: { create: assets },
